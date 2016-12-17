@@ -1,0 +1,108 @@
+Algorithm: I1A1U1
+CLUSTER-1 { size: 245, medoid: item360 } 
+CLUSTER-2 { size: 224, medoid: item256 } 
+CLUSTER-3 { size: 208, medoid: item550 } 
+CLUSTER-4 { size: 149, medoid: item224 } 
+CLUSTER-5 { size: 174, medoid: item583 } 
+clustering_time: 0.029259
+Silhouette: [0.123907, 0.154324, 0.0943975, 0.145213, 0.0992617, 0.12342]
+
+
+
+
+Algorithm: I1A1U2
+CLUSTER-1 { size: 268, medoid: item360 } 
+CLUSTER-2 { size: 223, medoid: item256 } 
+CLUSTER-3 { size: 197, medoid: item550 } 
+CLUSTER-4 { size: 137, medoid: item203 } 
+CLUSTER-5 { size: 175, medoid: item583 } 
+clustering_time: 0.023234
+Silhouette: [0.107468, 0.144603, 0.0967866, 0.156272, 0.0971719, 0.12046]
+
+
+
+
+Algorithm: I1A2U1
+CLUSTER-1 { size: 239, medoid: item360 } 
+CLUSTER-2 { size: 228, medoid: item281 } 
+CLUSTER-3 { size: 216, medoid: item550 } 
+CLUSTER-4 { size: 134, medoid: item224 } 
+CLUSTER-5 { size: 183, medoid: item583 } 
+clustering_time: 0.054756
+Silhouette: [0.0821942, 0.126698, 0.0694596, 0.0615826, 0.0398066, 0.0759482]
+
+
+
+
+Algorithm: I1A2U2
+CLUSTER-1 { size: 233, medoid: item360 } 
+CLUSTER-2 { size: 190, medoid: item357 } 
+CLUSTER-3 { size: 220, medoid: item550 } 
+CLUSTER-4 { size: 182, medoid: item208 } 
+CLUSTER-5 { size: 175, medoid: item583 } 
+clustering_time: 0.037802
+Silhouette: [0.0544254, 0.070656, 0.0735048, 0.0697928, 0.0509507, 0.0638659]
+
+
+
+
+Algorithm: I2A1U1
+CLUSTER-1 { size: 358, medoid: item622 } 
+CLUSTER-2 { size: 148, medoid: item461 } 
+CLUSTER-3 { size: 188, medoid: item203 } 
+CLUSTER-4 { size: 160, medoid: item291 } 
+CLUSTER-5 { size: 146, medoid: item447 } 
+clustering_time: 0.011631
+Silhouette: [0.0733724, 0.149891, 0.114943, 0.110485, 0.12872, 0.115482]
+
+
+
+
+Algorithm: I2A1U2
+CLUSTER-1 { size: 216, medoid: item985 } 
+CLUSTER-2 { size: 145, medoid: item958 } 
+CLUSTER-3 { size: 217, medoid: item859 } 
+CLUSTER-4 { size: 171, medoid: item456 } 
+CLUSTER-5 { size: 251, medoid: item262 } 
+clustering_time: 0.002393
+Silhouette: [0.0784193, 0.156089, 0.0897946, 0.0911529, 0.0571359, 0.0945183]
+
+
+
+
+Algorithm: I2A2U1
+CLUSTER-1 { size: 244, medoid: item898 } 
+CLUSTER-2 { size: 288, medoid: item49 } 
+CLUSTER-3 { size: 203, medoid: item114 } 
+CLUSTER-4 { size: 172, medoid: item433 } 
+CLUSTER-5 { size: 93, medoid: item934 } 
+clustering_time: 0.036164
+Silhouette: [0.0485391, 0.0873342, 0.0964223, 0.0364036, 0.0495075, 0.0636413]
+
+
+
+
+Algorithm: I2A2U2
+CLUSTER-1 { size: 270, medoid: item995 } 
+CLUSTER-2 { size: 210, medoid: item650 } 
+CLUSTER-3 { size: 186, medoid: item555 } 
+CLUSTER-4 { size: 225, medoid: item240 } 
+CLUSTER-5 { size: 109, medoid: item527 } 
+clustering_time: 0.008254
+Silhouette: [0.061286, 0.0842314, 0.0638319, 0.053697, 0.0777563, 0.0681605]
+
+
+
+
+CLARA, Algorithm: I2A1U1
+CLUSTER-1 { size: 12, medoid: item389 } 
+CLUSTER-2 { size: 7, medoid: item188 } 
+CLUSTER-3 { size: 9, medoid: item221 } 
+CLUSTER-4 { size: 11, medoid: item122 } 
+CLUSTER-5 { size: 11, medoid: item917 } 
+clustering_time: 6.1e-05
+Silhouette: [0.175588, 0.481864, 0.418253, 0.25017, 0.286792, 0.322534]
+
+
+
+
