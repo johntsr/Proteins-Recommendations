@@ -4,104 +4,104 @@ CLUSTER-2 { size: 224, medoid: item256 }
 CLUSTER-3 { size: 208, medoid: item550 } 
 CLUSTER-4 { size: 149, medoid: item224 } 
 CLUSTER-5 { size: 174, medoid: item583 } 
-clustering_time: 0.029259
+clustering_time: 0.063994
 Silhouette: [0.123907, 0.154324, 0.0943975, 0.145213, 0.0992617, 0.12342]
 
 
 
 
 Algorithm: I1A1U2
-CLUSTER-1 { size: 268, medoid: item360 } 
-CLUSTER-2 { size: 223, medoid: item256 } 
-CLUSTER-3 { size: 197, medoid: item550 } 
-CLUSTER-4 { size: 137, medoid: item203 } 
-CLUSTER-5 { size: 175, medoid: item583 } 
-clustering_time: 0.023234
-Silhouette: [0.107468, 0.144603, 0.0967866, 0.156272, 0.0971719, 0.12046]
+CLUSTER-1 { size: 230, medoid: item360 } 
+CLUSTER-2 { size: 179, medoid: item357 } 
+CLUSTER-3 { size: 227, medoid: item550 } 
+CLUSTER-4 { size: 175, medoid: item231 } 
+CLUSTER-5 { size: 189, medoid: item583 } 
+clustering_time: 0.048262
+Silhouette: [0.0900919, 0.0778516, 0.115283, 0.113418, 0.0864548, 0.0966199]
 
 
 
 
 Algorithm: I1A2U1
-CLUSTER-1 { size: 239, medoid: item360 } 
-CLUSTER-2 { size: 228, medoid: item281 } 
-CLUSTER-3 { size: 216, medoid: item550 } 
-CLUSTER-4 { size: 134, medoid: item224 } 
-CLUSTER-5 { size: 183, medoid: item583 } 
-clustering_time: 0.054756
-Silhouette: [0.0821942, 0.126698, 0.0694596, 0.0615826, 0.0398066, 0.0759482]
+CLUSTER-1 { size: 251, medoid: item954 } 
+CLUSTER-2 { size: 214, medoid: item281 } 
+CLUSTER-3 { size: 212, medoid: item550 } 
+CLUSTER-4 { size: 165, medoid: item231 } 
+CLUSTER-5 { size: 158, medoid: item583 } 
+clustering_time: 0.350098
+Silhouette: [0.0649087, 0.128233, 0.0738754, 0.0639434, 0.0396788, 0.0741278]
 
 
 
 
 Algorithm: I1A2U2
-CLUSTER-1 { size: 233, medoid: item360 } 
-CLUSTER-2 { size: 190, medoid: item357 } 
-CLUSTER-3 { size: 220, medoid: item550 } 
-CLUSTER-4 { size: 182, medoid: item208 } 
-CLUSTER-5 { size: 175, medoid: item583 } 
-clustering_time: 0.037802
-Silhouette: [0.0544254, 0.070656, 0.0735048, 0.0697928, 0.0509507, 0.0638659]
+CLUSTER-1 { size: 198, medoid: item357 } 
+CLUSTER-2 { size: 239, medoid: item387 } 
+CLUSTER-3 { size: 177, medoid: item448 } 
+CLUSTER-4 { size: 130, medoid: item828 } 
+CLUSTER-5 { size: 256, medoid: item670 } 
+clustering_time: 0.120426
+Silhouette: [0.0324268, 0.0856324, 0.0917135, 0.10571, 0.0814306, 0.0793827]
 
 
 
 
 Algorithm: I2A1U1
-CLUSTER-1 { size: 358, medoid: item622 } 
-CLUSTER-2 { size: 148, medoid: item461 } 
-CLUSTER-3 { size: 188, medoid: item203 } 
-CLUSTER-4 { size: 160, medoid: item291 } 
-CLUSTER-5 { size: 146, medoid: item447 } 
-clustering_time: 0.011631
-Silhouette: [0.0733724, 0.149891, 0.114943, 0.110485, 0.12872, 0.115482]
+CLUSTER-1 { size: 180, medoid: item433 } 
+CLUSTER-2 { size: 179, medoid: item499 } 
+CLUSTER-3 { size: 162, medoid: item946 } 
+CLUSTER-4 { size: 244, medoid: item878 } 
+CLUSTER-5 { size: 235, medoid: item768 } 
+clustering_time: 0.023157
+Silhouette: [0.107184, 0.136988, 0.0986285, 0.105964, 0.0946754, 0.108688]
 
 
 
 
 Algorithm: I2A1U2
-CLUSTER-1 { size: 216, medoid: item985 } 
-CLUSTER-2 { size: 145, medoid: item958 } 
-CLUSTER-3 { size: 217, medoid: item859 } 
-CLUSTER-4 { size: 171, medoid: item456 } 
-CLUSTER-5 { size: 251, medoid: item262 } 
-clustering_time: 0.002393
-Silhouette: [0.0784193, 0.156089, 0.0897946, 0.0911529, 0.0571359, 0.0945183]
+CLUSTER-1 { size: 200, medoid: item255 } 
+CLUSTER-2 { size: 184, medoid: item872 } 
+CLUSTER-3 { size: 226, medoid: item522 } 
+CLUSTER-4 { size: 249, medoid: item959 } 
+CLUSTER-5 { size: 141, medoid: item397 } 
+clustering_time: 0.009637
+Silhouette: [0.110098, 0.126369, 0.10184, 0.0895899, 0.139103, 0.1134]
 
 
 
 
 Algorithm: I2A2U1
-CLUSTER-1 { size: 244, medoid: item898 } 
-CLUSTER-2 { size: 288, medoid: item49 } 
-CLUSTER-3 { size: 203, medoid: item114 } 
-CLUSTER-4 { size: 172, medoid: item433 } 
-CLUSTER-5 { size: 93, medoid: item934 } 
-clustering_time: 0.036164
-Silhouette: [0.0485391, 0.0873342, 0.0964223, 0.0364036, 0.0495075, 0.0636413]
+CLUSTER-1 { size: 221, medoid: item254 } 
+CLUSTER-2 { size: 246, medoid: item353 } 
+CLUSTER-3 { size: 161, medoid: item52 } 
+CLUSTER-4 { size: 179, medoid: item325 } 
+CLUSTER-5 { size: 193, medoid: item463 } 
+clustering_time: 0.124759
+Silhouette: [0.0453847, 0.100768, 0.078341, 0.0932339, 0.068244, 0.0771943]
 
 
 
 
 Algorithm: I2A2U2
-CLUSTER-1 { size: 270, medoid: item995 } 
-CLUSTER-2 { size: 210, medoid: item650 } 
-CLUSTER-3 { size: 186, medoid: item555 } 
-CLUSTER-4 { size: 225, medoid: item240 } 
-CLUSTER-5 { size: 109, medoid: item527 } 
-clustering_time: 0.008254
-Silhouette: [0.061286, 0.0842314, 0.0638319, 0.053697, 0.0777563, 0.0681605]
+CLUSTER-1 { size: 193, medoid: item736 } 
+CLUSTER-2 { size: 218, medoid: item225 } 
+CLUSTER-3 { size: 196, medoid: item338 } 
+CLUSTER-4 { size: 217, medoid: item368 } 
+CLUSTER-5 { size: 176, medoid: item882 } 
+clustering_time: 0.066863
+Silhouette: [0.0377221, 0.0831813, 0.116478, 0.0525561, 0.0695924, 0.071906]
 
 
 
 
 CLARA, Algorithm: I2A1U1
-CLUSTER-1 { size: 12, medoid: item389 } 
-CLUSTER-2 { size: 7, medoid: item188 } 
-CLUSTER-3 { size: 9, medoid: item221 } 
-CLUSTER-4 { size: 11, medoid: item122 } 
-CLUSTER-5 { size: 11, medoid: item917 } 
-clustering_time: 6.1e-05
-Silhouette: [0.175588, 0.481864, 0.418253, 0.25017, 0.286792, 0.322534]
+CLUSTER-1 { size: 13, medoid: item967 } 
+CLUSTER-2 { size: 13, medoid: item593 } 
+CLUSTER-3 { size: 10, medoid: item633 } 
+CLUSTER-4 { size: 9, medoid: item89 } 
+CLUSTER-5 { size: 5, medoid: item919 } 
+clustering_time: 7.6e-05
+Silhouette: [0.227315, 0.264259, 0.390866, 0.304262, 0.553649, 0.34807]
 
 
 

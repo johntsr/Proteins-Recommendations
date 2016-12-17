@@ -1,6 +1,7 @@
 #include "ClusterStructures.h"
 
 #include <iostream>
+#include <cstdlib>
 
 TriangularMatrix::TriangularMatrix(int n, Point** PointTable ){
 	N = n;							// the matrix has N rows
@@ -17,6 +18,7 @@ TriangularMatrix::TriangularMatrix(int n, Point** PointTable ){
 			d[i][j] = PointTable[i]->distance( PointTable[j] );	// fill the distance matrix
 		}
 	}
+
 }
 
 Quantity*& TriangularMatrix::operator ()(int i, int j){
@@ -30,6 +32,14 @@ Quantity*& TriangularMatrix::operator ()(int i, int j){
 		return d[i][j];
 	}
 
+}
+
+void TriangularMatrix::print(void){
+	for(int i = 0; i < N; i++){
+		for(int j = 0; j < i; j++){
+			std::cout << d[i][j]->castAsDouble() << std::endl;
+		}
+	}
 }
 
 TriangularMatrix::~TriangularMatrix(){

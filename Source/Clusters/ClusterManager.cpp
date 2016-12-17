@@ -129,6 +129,7 @@ void ClusterManager::fillTable(std::string dataPath){
 		PointTable[i] = getNextPoint(file);		// store all the points
 	}
 
+	// exit(0);
 	d = new TriangularMatrix(N, PointTable);
 
 	for(int i = 0; i < 8; i++){
@@ -137,6 +138,7 @@ void ClusterManager::fillTable(std::string dataPath){
 
 	int n_ = 40 + 2*K_clusters;
 	Algorithm[8] = new CLARA(PointTable, N, S, n_, K_clusters);
+
 }
 
 void ClusterManager::finalise(void){
@@ -170,7 +172,8 @@ HammingManager::HammingManager(int K_clusters, int K_hash, int L, int Q, int S, 
 Point* HammingManager::getNextPoint(ifstream& queryFile){	// depends on the format of the file
 	string buffer, name;
 	queryFile >> name >> buffer;
-	return new HammingPoint(name, (uint64_t)strtoull( buffer.c_str(), NULL , 2) , Dimension );
+	// (new HammingPoint(name, buffer ))->print();
+	return new HammingPoint(name, buffer );
 }
 
 int  HammingManager::countDimension	(string fileName){

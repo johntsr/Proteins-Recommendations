@@ -203,7 +203,7 @@ void Reverse_LSH::assignToCenters(List<Point,Point* >* ResultPoints, int k){
 			NearestCenter[i] = k;					// then make this center the best center
 		}
 		else{										// now, a best center has been found
-			if( (*d)(i, Centers[k]) < (*d)(i, Centers[NearestCenter[i]] ) ){	// if an even better center has been found
+			if( (*d)(i, Centers[k])->castAsDouble() < (*d)(i, Centers[NearestCenter[i]] )->castAsDouble() ){	// if an even better center has been found
 				NearestCenter2[i] = NearestCenter[i];							// update it
 				NearestCenter[i] = k;
 			}
@@ -211,7 +211,7 @@ void Reverse_LSH::assignToCenters(List<Point,Point* >* ResultPoints, int k){
 				if( NearestCenter2[i] == NONE ){
 					NearestCenter2[i] = k;
 				}
-				else if( (*d)(i, Centers[k]) < (*d)(i, Centers[NearestCenter2[i]] ) ){
+				else if( (*d)(i, Centers[k])->castAsDouble() < (*d)(i, Centers[NearestCenter2[i]] )->castAsDouble() ){
 					NearestCenter2[i] = k;
 				}
 			}
@@ -231,9 +231,7 @@ Quantity* Reverse_LSH::minDistBetweenCenters(void){
 		}
 	}
 
-	// copy the contents in the allocated space, so as to delete it later on
-	*toReturn = *minDist;
-
+	toReturn->copy(minDist);
 	return toReturn;
 }
 

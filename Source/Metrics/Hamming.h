@@ -9,11 +9,11 @@
 class HammingPoint: public Point {
 
 	private:
-		Quantity* Value;			// the co-ordinates of a point can be stored in 64 bits
-		int 	Dimension;		// the actual number of dimensions a point needs	public:
+		Bitset* Value;			// the co-ordinates of a point can be stored in 64 bits
 
 	public:
-		HammingPoint(std::string name, uint64_t value, int length );
+		HammingPoint(std::string name, std::string value);
+		HammingPoint(std::string name, Bitset* bits);
 
 		std::string name		(void);		// @override: the human-readable representation of the point
 		int 		dimension	(void);		// @override: the dimensionality of the point

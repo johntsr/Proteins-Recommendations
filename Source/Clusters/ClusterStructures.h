@@ -40,6 +40,8 @@ class TriangularMatrix{
 
 		Quantity*& operator ()(int i, int j);		// access to the d[i][j] element
 
+		void print(void);
+
 		~TriangularMatrix();
 };
 

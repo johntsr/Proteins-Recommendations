@@ -226,10 +226,14 @@ void ClusterAlgorithm::dummyClustering(void){
 	string name = "A";
 	for(int i = 0; i < 5; i++){
 		if( i == 0 || i == 1 ){
-			DummyPointTable[i] = new HammingPoint( name , (uint64_t)i, 6 );
+			string dummy = "000000";
+			dummy[i] = '1';
+			DummyPointTable[i] = new HammingPoint( name , dummy);
 		}
 		else{
-			DummyPointTable[i] = new HammingPoint( name , (uint64_t)(i*i*i + 12), 6 );
+			string dummy = "101010";
+			dummy[i] = '1';
+			DummyPointTable[i] = new HammingPoint( name , dummy);
 		}
 		name += "A";
 	}

@@ -9,20 +9,18 @@
 ***************** MetricSpacePoint class methods ******************
 ******************************************************************/
 
-MetricSpacePoint::MetricSpacePoint(std::string name, int length, std::string lineOfDistances, int position) {
-	Point::Name = name;
+MetricSpacePoint::MetricSpacePoint(std::string name, int length, int n, int position, EuclideanPoint** configuration){
 
+	Point::Name = name;
 	Position = position;
+
+	N  = n;
+	Configuration = configuration;
 
 	Length = length;
 	DistanceMatrix = new Quantity[Length];
-
-	std::istringstream streamLine(lineOfDistances);	// convert the string in an easily parsed form
-	std::string temp;								// temporary variable for extracting data from the above "string"
-
-	for(int i = 0; i < Length; i++){				// for every co-ordinate
-		streamLine >> temp;							// get its value as string
-		DistanceMatrix[i].set( strtod( temp.c_str(), NULL ) );	// and convert it to double
+	for(int i = 0; i < Length; i++){
+		DistanceMatrix[i] = -1;
 	}
 }
 
@@ -38,7 +36,7 @@ int MetricSpacePoint::dimension(void) {				// the dimensionality of the point
 
 // @override
 Quantity* MetricSpacePoint::value(void){			// maps a point into a non-negative integer value
-	return new Quantity( (uint64_t)Position );
+	return new Quantity( new Bitset(Position), true );
 }
 
 // @override
@@ -49,9 +47,15 @@ Quantity* MetricSpacePoint::multiply (Point* p){	// defines the multiplication b
 // @override
 Quantity* MetricSpacePoint::distance(Point* p){
 	Quantity* temp = p->value();
-	uint64_t position = temp->getBits();
+	uint64_t position = temp->getBits()->size();
+
+	if( DistanceMatrix[position].castAsDouble() == -1.0 ){
+		// TODO...
+	}
+
 	delete temp;
 	return new Quantity( DistanceMatrix[ position ].getDouble() );
+
 }
 
 // @override
