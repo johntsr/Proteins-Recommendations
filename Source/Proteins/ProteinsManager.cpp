@@ -67,13 +67,12 @@ void ProteinsManager::runCUTests(void){
 }
 
 void ProteinsManager::runTests(ofstream& outfFile){
-	for(int i = 0; i < 9; i++){						// run all variation of the algorithms
-		Algorithm[i]->run();
-		Algorithm[i]->evaluate(outfFile, Complete);
-	}
+	Algorithm->run();
+	Algorithm->evaluate(outfFile, Complete);
 }
 
 void ProteinsManager::fillTable(std::string dataPath){
+
 
 	ifstream file;
 	openFileRead(dataPath, file);
@@ -85,13 +84,7 @@ void ProteinsManager::fillTable(std::string dataPath){
 
 	d = new TriangularMatrix(numConform, PointTable);
 
-	for(int i = 0; i < 8; i++){
-		Algorithm[i] = new ClusterAlgorithm(PointTable, d, numConform, K_clusters, i, K_hash, L, Q, S);
-	}
-
-	int n_ = 40 + 2*K_clusters;
-	Algorithm[8] = new CLARA(PointTable, numConform, S, n_, K_clusters);
-
+	Algorithm = new ClusterAlgorithm(PointTable, d, numConform, K_clusters, 4, K_hash, L, Q, S);
 }
 
 void ProteinsManager::finalise(void){
@@ -101,9 +94,7 @@ void ProteinsManager::finalise(void){
 		}
 		delete[] PointTable;
 
-		for(int i = 0; i < 9; i++){
-			delete Algorithm[i];
-		}
+		delete Algorithm;
 
 		delete d;
 		PointTable = NULL;
@@ -148,18 +139,15 @@ MetricSpaceManager::MetricSpaceManager(int K_clusters, int K_hash, int L, int Q,
 : ProteinsManager(K_clusters, K_hash, L, Q, S, complete) {}
 
 Point* MetricSpaceManager::getNextPoint(ifstream& queryFile){				// depends on the format of the file
-	static int count = 0;
-	EuclideanPoint** Configuration = new EuclideanPoint*[N];
-	for(int i = 0; i < N; i++){
-		string line;
-		getline(queryFile, line);
-		stringstream name;
-		name << "Nucleotide " << i;
-		Configuration[i] = new EuclideanPoint( name.str(), line, 3 );
+	static int count = -1;
+	double* Configuration = new double[N*3];
+	for(int i = 0; i < 3*N; i++){
+		queryFile >> Configuration[i];
 	}
 
 	stringstream name;
-	name << "Protein " << count++;
+	count++;
+	name << "Protein " << count;
 	return new MetricSpacePoint( name.str(), numConform, N, count, Configuration);
 }
 

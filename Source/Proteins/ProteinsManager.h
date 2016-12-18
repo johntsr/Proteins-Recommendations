@@ -16,7 +16,7 @@ class ProteinsManager{													// abstract class used to communicate with th
 		int 	numConform;					// thr number of points
 		int 	N;
 		int Dimension;						// the dimensionality of the points
-		Clustering* Algorithm[9];			// the algorithms to run
+		Clustering* Algorithm;			// the algorithms to run
 
 		int K_clusters;						// the number of clusters
 		int K_hash;							// the "K" parameter in the LSH
@@ -61,7 +61,6 @@ class MetricSpaceManager: public ProteinsManager{
 	private:
 
 		Point* 	getNextPoint(std::ifstream& queryFile);					// get the next point from a file
-		void 	openFileRead(std::string& path, std::ifstream& file);
 	public:
 		MetricSpaceManager(int K_clusters, int K_hash, int L, int Q, int S, bool complete);
 		~MetricSpaceManager();

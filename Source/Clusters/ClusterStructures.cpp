@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <time.h>
 
 TriangularMatrix::TriangularMatrix(int n, Point** PointTable ){
 	N = n;							// the matrix has N rows
@@ -13,11 +14,19 @@ TriangularMatrix::TriangularMatrix(int n, Point** PointTable ){
 
 	Zero = new Quantity(0.0);
 
+
+	clock_t start = clock();		// start measuring time
+
 	for(int i = 0; i < N; i++){
 		for(int j = 0; j < i; j++){
-			d[i][j] = PointTable[i]->distance( PointTable[j] );	// fill the distance matrix
+			Quantity* temp = PointTable[i]->distance( PointTable[j] );	// fill the distance matrix
+			// std::cout << temp->castAsDouble() << " mfndskj" << '\n';
+			d[i][j] = temp;
 		}
 	}
+
+	clock_t end = clock();			// stop measuring
+	std::cout << "time needed = " <<  (end - start)/(double)CLOCKS_PER_SEC << '\n';
 
 }
 

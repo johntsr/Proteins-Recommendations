@@ -1,4 +1,4 @@
-#include "Clusters/ClusterManager.h"
+#include "Proteins/ProteinsManager.h"
 #include "General/Math.h"
 
 using namespace std;
@@ -61,6 +61,27 @@ void createVectorQueryFile(void){
 	exit(0);
 }
 
+void createProteins(void){
+	ofstream file("DataSets/Proteins.csv");
+
+	int numConform = 1000;
+	int N = 600;
+
+	file << "numConform: " << numConform << endl;
+	file << "N: " << N << endl;
+
+	for(int i = 0; i < numConform; i++){
+		for(int j = 0; j < N; j++){
+			file << Math::dRand(-100.0, 100.0) << " ";
+			file << Math::dRand(-100.0, 100.0) << " ";
+			file << Math::dRand(-100.0, 100.0) << '\n';
+		}
+	}
+
+	file.close();
+
+	// exit(0);
+}
 
 void getPath(string& path, string message);
 
@@ -70,16 +91,14 @@ void parseArguments(int argc, char** argv, bool& complete, string& dataPath, str
 void parseConfiguration( string& confPath, int& K_clusters, int& K_hash, int& L, int& Q, int& S );
 
 
-int runCUTests(ClusterManager* manager);
-
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
 	//createBinaryFile(64);
 	//createVectorFile();
 	//createVectorQueryFile();
+	// createProteins();
 
 	string dataPath, outPath, confPath, metric;
-	ClusterManager* manager = NULL;
 	fstream dataFile;
 	bool complete = false;
 	bool CUTest = false;
@@ -88,38 +107,13 @@ int main(int argc, char *argv[]) {
 
 	int K_clusters, K_hash, L, Q, S;
 	parseConfiguration( confPath, K_clusters, K_hash, L, Q, S );
+	ProteinsManager* manager =  new MetricSpaceManager(K_clusters, K_hash, L, Q, S, complete);;
 
 	getPath( dataPath, "Please, enter the path for the data set file" );
 	openFile(dataPath, dataFile);
 
 	dataFile >> metric;			// skip "@metric_space"
 	dataFile >> metric;			// get metric function
-
-	if( metric == "hamming" ){
-		manager = new HammingManager(K_clusters, K_hash, L, Q, S, complete);
-	}
-	else if( metric == "vector" ){
-		dataFile >> metric;
-		if( metric == "@metric" ){
-
-			dataFile >> metric;
-			if( metric == "euclidean"){
-				manager = new EuclideanManager(K_clusters, K_hash, L, Q, S, complete, true);
-			}
-			else{
-				manager = new CosineManager(K_clusters, K_hash, L, Q, S, complete);
-			}
-		}
-		else{
-			manager = new EuclideanManager(K_clusters, K_hash, L, Q, S, complete, false);
-		}
-	}
-	else if( metric == "matrix" ){
-		manager = new MetricSpaceManager(K_clusters, K_hash, L, Q, S, complete);
-	}
-	else{
-		std::cout << "Wrong input given" << std::endl;
-	}
 
 	if( manager != NULL ){
 		manager->run(dataPath, outPath);

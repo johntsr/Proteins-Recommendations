@@ -58,8 +58,8 @@ class Quantity{
 
 		virtual double castAsDouble		(void);
 
-		virtual void set(double d);				// store a "double"
-		virtual void set(Bitset* u);			// store a "uint64_t"
+		virtual void setDouble(double d);				// store a "double"
+		virtual void setBits(Bitset* u);			// store a "uint64_t"
 
 		virtual void multiply(int times);
 

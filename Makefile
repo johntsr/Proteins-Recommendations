@@ -8,6 +8,9 @@ DIR_CLUSTER 	= $(DIR_SOURCE)Clusters/
 SOURCE_CLUSTER	= $(DIR_CLUSTER)*.cpp
 HEADER_CLUSTER 	= $(DIR_CLUSTER)*.h
 
+DIR_PROTEIN 	= $(DIR_SOURCE)Proteins/
+SOURCE_PROTEIN	= $(DIR_CLUSTER)*.cpp
+HEADER_PROTEIN 	= $(DIR_CLUSTER)*.h
 
 DIR_DATA_STRUCT = $(DIR_SOURCE)DataStructures/
 SOURCE_DATA 	=
@@ -25,7 +28,7 @@ SOURCE			= $(SOURCE_CLUSTER) $(SOURCE_METRICS) $(SOURCE_GENERAL) $(DIR_SOURCE)Ma
 HEADER			= $(HEADER_CLUSTER) $(HEADER_METRICS) $(HEADER_GENERAL) $(HEADER_DATA)
 
 DIR_BUILD = ./Build/
-OBJS 		= $(DIR_BUILD)Main.o $(DIR_BUILD)Hamming.o $(DIR_BUILD)Euclidean.o $(DIR_BUILD)Vector.o $(DIR_BUILD)CosineSimilarity.o $(DIR_BUILD)HashFunction.o $(DIR_BUILD)Clusters.o $(DIR_BUILD)ClusterManager.o $(DIR_BUILD)MetricSpace.o $(DIR_BUILD)Quantity.o $(DIR_BUILD)Initializer.o $(DIR_BUILD)ClusterStructures.o $(DIR_BUILD)Assigner.o $(DIR_BUILD)Updater.o
+OBJS 		= $(DIR_BUILD)Main.o $(DIR_BUILD)Hamming.o $(DIR_BUILD)Euclidean.o $(DIR_BUILD)Vector.o $(DIR_BUILD)CosineSimilarity.o $(DIR_BUILD)HashFunction.o $(DIR_BUILD)Clusters.o $(DIR_BUILD)ProteinsManager.o $(DIR_BUILD)MetricSpace.o $(DIR_BUILD)Quantity.o $(DIR_BUILD)Initializer.o $(DIR_BUILD)ClusterStructures.o $(DIR_BUILD)Assigner.o $(DIR_BUILD)Updater.o
 
 
 # -g option enables debugging mode
@@ -34,12 +37,12 @@ OBJS 		= $(DIR_BUILD)Main.o $(DIR_BUILD)Hamming.o $(DIR_BUILD)Euclidean.o $(DIR_
 all: $(OUT)
 
 $(OUT): $(OBJS) $(SOURCE) $(HEADER)
-	$(CC) -g $(OBJS) -o $(OUT) -lcunit
+	$(CC) -g $(OBJS) -o $(OUT) -lcunit  -lgsl -lgslcblas
 
 # create/compile the individual files >>separately<<
 
-$(DIR_BUILD)ClusterManager.o: $(DIR_CLUSTER)ClusterManager.cpp $(HEADER)
-	$(CC) $(FLAGS) $(DIR_CLUSTER)ClusterManager.cpp -o $(DIR_BUILD)ClusterManager.o
+$(DIR_BUILD)ProteinsManager.o: $(DIR_PROTEIN)ProteinsManager.cpp $(HEADER)
+	$(CC) $(FLAGS) $(DIR_PROTEIN)ProteinsManager.cpp -o $(DIR_BUILD)ProteinsManager.o
 
 $(DIR_BUILD)Clusters.o: $(DIR_CLUSTER)Clusters.cpp $(HEADER)
 	$(CC) $(FLAGS) $(DIR_CLUSTER)Clusters.cpp -o $(DIR_BUILD)Clusters.o
@@ -99,10 +102,13 @@ runEuclideanCUnit:
 	./$(OUT) -c cluster.conf -d DataSets/DataEuclidean.csv -o OUR_ResultsEuclidean.txt -cu
 
 runMetricSpace:
-	./$(OUT) -c cluster.conf -d DataSets/DistanceMatrix.csv  -o OUR_ResultsDistanceMatrix.txt
+	./$(OUT) -c cluster.conf -d DataSets/Proteins.csv  -o OUR_ResultsProteins.txt
 
 debug:
-	gdb --args ./$(OUT) -c cluster.conf -d DataSets/DataHamming.csv -o OUR_ResultsHamming.txt
+	gdb --args ./$(OUT) -c cluster.conf -d DataSets/Proteins.csv -o OUR_ResultsProteins.txt
+
+valgrind:
+	valgrind --leak-check=full --show-leak-kinds=all ./$(OUT) -c cluster.conf -d DataSets/Proteins.csv -o OUR_ResultsProteins.txt > log.txt 2>&1
 
 
 # clean house

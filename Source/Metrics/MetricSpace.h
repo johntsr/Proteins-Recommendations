@@ -2,17 +2,20 @@
 #include "../General/Point.h"
 #include "../General/HashFunction.h"
 
+double computeDistance(double* x, double* y, int N);
+
 // an actual point of the hamming space
 class MetricSpacePoint: public Point {
 	private:
-		Quantity* 	DistanceMatrix;			// the "row" of distances from other points
+		Quantity** 	DistanceMatrix;			// the "row" of distances from other points
 		int 		Length;					// the size of the above table
 		int 		Position;				// the index of this point in the distance table
-		EuclideanPoint** Configuration;
+		double* 	Configuration;
 		int 		N;
+
 	public:
 
-		MetricSpacePoint(std::string name, int length, int n, int position, EuclideanPoint** configuration);
+		MetricSpacePoint(std::string name, int length, int n, int position, double* configuration);
 
 
 		std::string name		(void);		// @override: the human-readable representation of the point

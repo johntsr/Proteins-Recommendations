@@ -130,26 +130,26 @@ string Bitset::getString(void){
 ******************************************************************/
 
 Quantity::Quantity(void){
-	set(0.0);
+	setDouble(0.0);
 	Bits = NULL;
 	toDelete = false;
 }
 
 Quantity::Quantity(double d){
-	set(d);
+	setDouble(d);
 	Bits = NULL;
 	toDelete = false;
 }
 
 Quantity::Quantity(std::string bitString){
-	set(0.0);
-	Bits = new Bitset(bitString);
+	setDouble(0.0);
+	setBits(new Bitset(bitString));
 	toDelete = true;
 }
 
 Quantity::Quantity(Bitset* bits, bool del){
-	set(0.0);
-	set(bits);
+	setDouble(0.0);
+	setBits(bits);
 	toDelete = del;
 }
 
@@ -184,12 +184,12 @@ double Quantity::castAsDouble(void){
 }
 
 
-void Quantity::set(double d){
+void Quantity::setDouble(double d){
 	value = d;
 	isDouble = true;
 }
 
-void Quantity::set(Bitset* bits){
+void Quantity::setBits(Bitset* bits){
 	Bits = bits;
 	isDouble = false;
 }

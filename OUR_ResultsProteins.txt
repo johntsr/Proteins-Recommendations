@@ -1,0 +1,108 @@
+Algorithm: I1A1U1
+CLUSTER-1 { size: 233, medoid: Protein 571 } 
+CLUSTER-2 { size: 210, medoid: Protein 524 } 
+CLUSTER-3 { size: 200, medoid: Protein 252 } 
+CLUSTER-4 { size: 180, medoid: Protein 941 } 
+CLUSTER-5 { size: 177, medoid: Protein 238 } 
+clustering_time: 0.137884
+Silhouette: [0.00420283, 0.00598477, 0.00375223, 0.00618455, 0.00650981, 0.00532684]
+
+
+
+
+Algorithm: I1A1U2
+CLUSTER-1 { size: 233, medoid: Protein 571 } 
+CLUSTER-2 { size: 210, medoid: Protein 524 } 
+CLUSTER-3 { size: 200, medoid: Protein 252 } 
+CLUSTER-4 { size: 180, medoid: Protein 941 } 
+CLUSTER-5 { size: 177, medoid: Protein 238 } 
+clustering_time: 0.124823
+Silhouette: [0.00420283, 0.00598477, 0.00375223, 0.00618455, 0.00650981, 0.00532684]
+
+
+
+
+Algorithm: I1A2U1
+CLUSTER-1 { size: 260, medoid: Protein 571 } 
+CLUSTER-2 { size: 208, medoid: Protein 524 } 
+CLUSTER-3 { size: 195, medoid: Protein 252 } 
+CLUSTER-4 { size: 173, medoid: Protein 941 } 
+CLUSTER-5 { size: 164, medoid: Protein 238 } 
+clustering_time: 0.18132
+Silhouette: [0.00555445, 0.00416827, 0.00327488, 0.00560434, 0.00558028, 0.00483645]
+
+
+
+
+Algorithm: I1A2U2
+CLUSTER-1 { size: 236, medoid: Protein 571 } 
+CLUSTER-2 { size: 219, medoid: Protein 524 } 
+CLUSTER-3 { size: 198, medoid: Protein 252 } 
+CLUSTER-4 { size: 185, medoid: Protein 941 } 
+CLUSTER-5 { size: 162, medoid: Protein 238 } 
+clustering_time: 0.175517
+Silhouette: [0.00451558, 0.00515481, 0.0034627, 0.00597745, 0.00528793, 0.00487969]
+
+
+
+
+Algorithm: I2A1U1
+CLUSTER-1 { size: 319, medoid: Protein 691 } 
+CLUSTER-2 { size: 45, medoid: Protein 582 } 
+CLUSTER-3 { size: 163, medoid: Protein 197 } 
+CLUSTER-4 { size: 281, medoid: Protein 255 } 
+CLUSTER-5 { size: 192, medoid: Protein 736 } 
+clustering_time: 0.032575
+Silhouette: [0.00241982, 0.0233755, 0.00620464, 0.00596654, 0.00563899, 0.00872111]
+
+
+
+
+Algorithm: I2A1U2
+CLUSTER-1 { size: 222, medoid: Protein 396 } 
+CLUSTER-2 { size: 156, medoid: Protein 820 } 
+CLUSTER-3 { size: 350, medoid: Protein 808 } 
+CLUSTER-4 { size: 117, medoid: Protein 435 } 
+CLUSTER-5 { size: 155, medoid: Protein 19 } 
+clustering_time: 0.01566
+Silhouette: [0.0045531, 0.00652493, 0.00286367, 0.00966263, 0.00714896, 0.00615066]
+
+
+
+
+Algorithm: I2A2U1
+CLUSTER-1 { size: 65, medoid: Protein 652 } 
+CLUSTER-2 { size: 209, medoid: Protein 333 } 
+CLUSTER-3 { size: 97, medoid: Protein 21 } 
+CLUSTER-4 { size: 354, medoid: Protein 264 } 
+CLUSTER-5 { size: 275, medoid: Protein 679 } 
+clustering_time: 0.059816
+Silhouette: [0.0155957, 0.00558131, 0.00774881, 0.00441904, 0.00374782, 0.00741854]
+
+
+
+
+Algorithm: I2A2U2
+CLUSTER-1 { size: 558, medoid: Protein 571 } 
+CLUSTER-2 { size: 92, medoid: Protein 163 } 
+CLUSTER-3 { size: 208, medoid: Protein 11 } 
+CLUSTER-4 { size: 68, medoid: Protein 659 } 
+CLUSTER-5 { size: 74, medoid: Protein 174 } 
+clustering_time: 0.102433
+Silhouette: [0.00354626, 0.00823185, 0.00634568, 0.0113724, 0.0105909, 0.00801742]
+
+
+
+
+CLARA, Algorithm: I2A1U1
+CLUSTER-1 { size: 12, medoid: Protein 700 } 
+CLUSTER-2 { size: 2, medoid: Protein 543 } 
+CLUSTER-3 { size: 11, medoid: Protein 778 } 
+CLUSTER-4 { size: 20, medoid: Protein 311 } 
+CLUSTER-5 { size: 5, medoid: Protein 294 } 
+clustering_time: 0.000128
+Silhouette: [0.0916917, 0.923347, 0.0955274, 0.0506739, 0.214165, 0.275081]
+
+
+
+

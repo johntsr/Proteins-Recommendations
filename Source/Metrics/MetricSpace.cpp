@@ -5,11 +5,81 @@
 #include <limits.h>
 #include <sstream>
 
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
+
+double computeDistance(double* x, double* y, int N){
+	// std::cout << "get in!" << std::endl;
+	double u[3*3];
+
+	gsl_matrix_view X = gsl_matrix_view_array(x, N, 3);
+	gsl_matrix_view Y = gsl_matrix_view_array(y, N, 3);
+	gsl_matrix_view U = gsl_matrix_view_array(u, 3, 3);
+
+	/* Compute C = A B */
+
+	// TODO: C IS REPLACED IS BY C!!!!
+	gsl_blas_dgemm (CblasTrans, CblasNoTrans,
+	              1.0, &X.matrix, &Y.matrix,
+	              0.0, &U.matrix);
+
+
+	gsl_matrix * V = gsl_matrix_alloc(3, 3);
+	gsl_vector * S = gsl_vector_alloc(3);
+	gsl_vector * work = gsl_vector_alloc(3);
+
+	// TODO: C IS REPLACED IS BY U!!!!
+	gsl_linalg_SV_decomp(&U.matrix, V, S, work);
+
+	double q[3*3];
+	gsl_matrix_view Q = gsl_matrix_view_array(q, 3, 3);
+	gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, 1.0, &U.matrix, V, 0.0, &Q.matrix);
+
+
+	int signum = 0.0;
+	gsl_permutation *p = gsl_permutation_alloc(3);
+	gsl_matrix *tmpQ = gsl_matrix_alloc(3, 3);
+	gsl_matrix_memcpy(tmpQ, &Q.matrix);
+	gsl_linalg_LU_decomp(tmpQ , p , &signum);
+	double det = gsl_linalg_LU_det(tmpQ, signum);
+	if( det < 0.0 ){
+		for(int i = 0; i < N; i++){
+			u[i*3 + 2] *= -1.0;
+		}
+
+		gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, 1.0, &U.matrix, V, 0.0, &Q.matrix);
+	}
+
+	double* d = new double[N*3];
+	gsl_matrix_view Diff = gsl_matrix_view_array(d, N, 3);
+	gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, 1.0, &X.matrix, &Q.matrix, 0.0, &Diff.matrix);
+	gsl_matrix_sub(&Diff.matrix, &Y.matrix);
+
+	double result = 0.0;
+	for(int i = 0; i < N; i++){
+		for(int j = 0; j < 3; j++){
+			result += d[i*3 + j] * d[i*3 + j];
+		}
+	}
+	result /= sqrt(N);
+
+
+	gsl_permutation_free(p);
+	gsl_matrix_free(tmpQ);
+	gsl_matrix_free(V);
+	gsl_vector_free(S);
+	gsl_vector_free(work);
+	delete[] d;
+
+	// std::cout << "get out! (result = " << result << ")" << std::endl;
+	return result;
+}
+
 /*****************************************************************
 ***************** MetricSpacePoint class methods ******************
 ******************************************************************/
 
-MetricSpacePoint::MetricSpacePoint(std::string name, int length, int n, int position, EuclideanPoint** configuration){
+MetricSpacePoint::MetricSpacePoint(std::string name, int length, int n, int position, double* configuration){
 
 	Point::Name = name;
 	Position = position;
@@ -18,10 +88,27 @@ MetricSpacePoint::MetricSpacePoint(std::string name, int length, int n, int posi
 	Configuration = configuration;
 
 	Length = length;
-	DistanceMatrix = new Quantity[Length];
+	DistanceMatrix = new Quantity*[Length];
 	for(int i = 0; i < Length; i++){
-		DistanceMatrix[i] = -1;
+		DistanceMatrix[i] = new Quantity(-1.0);
 	}
+
+	double Xc[3] = { 0.0, 0.0, 0.0};
+	for(int i = 0; i < 3*N; i += 3){
+		Xc[0] += Configuration[i];
+		Xc[1] += Configuration[i+1];
+		Xc[2] += Configuration[i+2];
+	}
+	Xc[0] /= N * 1.0;
+	Xc[1] /= N * 1.0;
+	Xc[2] /= N * 1.0;
+
+	for(int i = 0; i < 3*N; i += 3){
+		Configuration[i] -= Xc[0];
+		Configuration[i+1] -= Xc[1];
+		Configuration[i+2] -= Xc[2];
+	}
+
 }
 
 // @override
@@ -36,7 +123,7 @@ int MetricSpacePoint::dimension(void) {				// the dimensionality of the point
 
 // @override
 Quantity* MetricSpacePoint::value(void){			// maps a point into a non-negative integer value
-	return new Quantity( new Bitset(Position), true );
+	return new Quantity( Position * 1.0 );
 }
 
 // @override
@@ -47,14 +134,41 @@ Quantity* MetricSpacePoint::multiply (Point* p){	// defines the multiplication b
 // @override
 Quantity* MetricSpacePoint::distance(Point* p){
 	Quantity* temp = p->value();
-	uint64_t position = temp->getBits()->size();
+	int position = (int)temp->getDouble();
+	delete temp;
 
-	if( DistanceMatrix[position].castAsDouble() == -1.0 ){
-		// TODO...
+	if( DistanceMatrix[position]->getDouble() == -1.0 ){
+		DistanceMatrix[position]->setDouble(-2.0);
+		temp = p->distance(this);
+		// std::cout << "position = " << position <<  std::endl;
+		DistanceMatrix[position]->setDouble( temp->getDouble() );
+	}
+	else if( DistanceMatrix[position]->getDouble() == -2.0 ){
+		// calculate distance, store in DistanceMatrix[ position ]
+		MetricSpacePoint* pMetric = (MetricSpacePoint*)p;
+		double* otherConfiguration = pMetric->Configuration;
+
+		double* x = new double[N*3];
+		double* y = new double[N*3];
+
+		for(int i = 0; i < 3*N; i++){
+			x[i] = Configuration[i];
+			y[i] = otherConfiguration[i];
+		}
+
+		double result = computeDistance(x, y, N);
+		// return new Quantity(result);
+		temp = new Quantity(result);
+
+		delete[] x;
+		delete[] y;
+	}
+	else{
+		// return new Quantity( DistanceMatrix[ position ]->getDouble() );
+		temp = new Quantity( DistanceMatrix[ position ]->getDouble() );
 	}
 
-	delete temp;
-	return new Quantity( DistanceMatrix[ position ].getDouble() );
+	return temp;
 
 }
 
@@ -70,10 +184,10 @@ bool MetricSpacePoint::operator == (Point* p){
 // @override
 void MetricSpacePoint::print(void){
 	std::cout 	<< "\t(" << name() << ")"  << std::endl;
-	// for(int i = 0; i < Length; i++){
-	// 	std::cout << DistanceMatrix[i].getString() << " ";
-	// }
-	// std::cout << std::endl << std::endl;
+	for(int i = 0; i < Length; i++){
+		std::cout << DistanceMatrix[i]->getString() << " ";
+	}
+	std::cout << std::endl << std::endl;
 }
 
 // @override
@@ -95,6 +209,9 @@ Quantity* MetricSpacePoint::maxDistance(void){
 }
 
 MetricSpacePoint::~MetricSpacePoint(){
+	for(int i = 0; i < Length; i++){
+		delete DistanceMatrix[i];
+	}
 	delete[] DistanceMatrix;
 }
 
