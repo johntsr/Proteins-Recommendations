@@ -8,6 +8,7 @@
 #include <string>
 #include <fstream>
 
+typedef int (*rGenerator)(int N);
 
 class ProteinsManager{													// abstract class used to communicate with the user
 	protected:
@@ -15,14 +16,9 @@ class ProteinsManager{													// abstract class used to communicate with th
 		TriangularMatrix* d;				// the table of precomputed distances
 		int 	numConform;					// thr number of points
 		int 	N;
-		int Dimension;						// the dimensionality of the points
-		Clustering* Algorithm;			// the algorithms to run
-
+		ProteinsCluster* Algorithm;			// the algorithms to run
+		double BestTime;
 		int K_clusters;						// the number of clusters
-		int K_hash;							// the "K" parameter in the LSH
-		int L;								// the "L" parameter in the LSH
-		int Q;								// the "Q" parameter in CLARANS
-		int S;								// the "S" parameter in CLARA and CLARANS
 		bool Complete;						// whether to print all the clusters or just the centers
 
 		void getPath		(std::string& path, std::string message);// promts "message" to the user, then takes "path" from stdin
@@ -34,9 +30,9 @@ class ProteinsManager{													// abstract class used to communicate with th
 		// the above methods vary between the different Points
 		virtual void 	openFileRead 	(std::string& path, std::ifstream& file);// open a file in order to read it
 		virtual Point* 	getNextPoint	(std::ifstream& queryFile)=0;// get the next point from a file
-
+		virtual void 	evaluate		(std::ofstream& outfFile)=0;
 	public:
-		ProteinsManager(int K_clusters, int K_hash, int L, int Q, int S, bool complete);
+		ProteinsManager(bool complete);
 
 		void run(std::string& dataPath, std::string& outPath);		// initiate the procedure of "train & test"
 		void runCUTests(void);
@@ -45,26 +41,31 @@ class ProteinsManager{													// abstract class used to communicate with th
 };
 
 
-// class EuclideanManager: public ProteinsManager{
-// 	private:
-// 		bool Explicit;
-//
-// 		Point* 	getNextPoint(std::ifstream& queryFile);		// get the next point from a file
-// 		void 	openFileRead(std::string& path, std::ifstream& file);
-// 	public:
-// 		EuclideanManager(int K_clusters, int K_hash, int L, int Q, int S, bool complete, bool flag);
-//
-// };
-
-
-class MetricSpaceManager: public ProteinsManager{
-	private:
-
-		Point* 	getNextPoint(std::ifstream& queryFile);					// get the next point from a file
-	public:
-		MetricSpaceManager(int K_clusters, int K_hash, int L, int Q, int S, bool complete);
-		~MetricSpaceManager();
+class cRMSDManager: public ProteinsManager{
+private:
+	Point* 	getNextPoint	(std::ifstream& queryFile);					// get the next point from a file
+	void 	evaluate		(std::ofstream& outfFile);
+public:
+	cRMSDManager(bool complete);
+	~cRMSDManager();
 };
+
+
+enum dOption { SMALLEST, LARGEST, RANDOM };
+
+class dRMSDManager: public ProteinsManager{
+	private:
+		rGenerator Func;
+		dOption T;
+
+		Point* 	getNextPoint	(std::ifstream& queryFile);		// get the next point from a file
+		void 	evaluate		(std::ofstream& outfFile);
+
+	public:
+		dRMSDManager(dOption t, rGenerator func, bool complete);
+
+};
+
 
 
 #endif

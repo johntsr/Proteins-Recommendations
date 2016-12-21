@@ -102,13 +102,13 @@ runEuclideanCUnit:
 	./$(OUT) -c cluster.conf -d DataSets/DataEuclidean.csv -o OUR_ResultsEuclidean.txt -cu
 
 runMetricSpace:
-	./$(OUT) -c cluster.conf -d DataSets/Proteins.csv  -o OUR_ResultsProteins.txt
+	./$(OUT) -c cluster.conf -d DataSets/ProteinsSmall.csv  -o OUR_ResultsProteins.txt
 
 debug:
-	gdb --args ./$(OUT) -c cluster.conf -d DataSets/Proteins.csv -o OUR_ResultsProteins.txt
+	gdb --args ./$(OUT) -c cluster.conf -d DataSets/ProteinsSmall.csv -o OUR_ResultsProteins.txt
 
 valgrind:
-	valgrind --leak-check=full --show-leak-kinds=all ./$(OUT) -c cluster.conf -d DataSets/Proteins.csv -o OUR_ResultsProteins.txt > log.txt 2>&1
+	valgrind --leak-check=full --show-leak-kinds=all ./$(OUT) -c cluster.conf -d DataSets/ProteinsSmall.csv -o OUR_ResultsProteins.txt > log.txt 2>&1
 
 
 # clean house

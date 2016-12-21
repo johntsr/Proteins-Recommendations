@@ -1,0 +1,7 @@
+r: 6 , T = 0 , k = 9, silhouette = 0.459174 execution time = 0.005967 secs.
+r: 6 , T = 1 , k = 8, silhouette = 0.448106 execution time = 0.006915 secs.
+r: 6 , T = 2 , k = 10, silhouette = 0.295568 execution time = 0.008529 secs.
+r: 14 , T = 0 , k = 11, silhouette = 0.356117 execution time = 0.011659 secs.
+r: 14 , T = 1 , k = 13, silhouette = 0.435758 execution time = 0.007875 secs.
+r: 14 , T = 2 , k = 4, silhouette = 0.258741 execution time = 0.005136 secs.
+r: 15 , T = 0 , k = 15, silhouette = 0.411288 execution time = 0.019569 secs.

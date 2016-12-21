@@ -11,15 +11,15 @@ enum Direction{ UP, DOWN };
 
 class Math{													// class used for it's static functions
 	public:
-		static double dRand(){								// returns numbers in [0,1]
+		static double dRand(){								// returns numbers in [0,1)
 			return ( rand() / ( RAND_MAX + 1.0 ) );
 		}
-		// 
+		//
 		// static double dRand(int M, int N){					// returns numbers in [M,N]
 		// 	return M + ( rand() / ( RAND_MAX + 1.0 ) ) * (N - M );
 		// }
 
-		static double dRand(double M, double N){					// returns numbers in [M,N]
+		static double dRand(double M, double N){					// returns numbers in [M,N)
 			return M + ( rand() / ( RAND_MAX + 1.0 ) ) * (N - M );
 		}
 
@@ -130,7 +130,9 @@ class Math{													// class used for it's static functions
 
 		temp = rand()%(r - p + 1) + p ;
 		swap( &keys[temp], &keys[r] );
-		swap( &others[temp], &others[r] );
+		if( others != NULL ){
+			swap( &others[temp], &others[r] );
+		}
 
 		x = keys[r];
 		i = p-1;
@@ -140,11 +142,16 @@ class Math{													// class used for it's static functions
 			if( keys[j] < x ){
 				i++;
 				swap( &keys[i], &keys[j]);
-				swap( &others[i], &others[j]);
+				if( others != NULL ){
+					swap( &others[i], &others[j]);
+				}
 			}
 		}
 	   swap(&keys[i+1], &keys[r]);
-	   swap( &others[i+1], &others[r]);
+	   if( others != NULL ){
+		   swap( &others[i+1], &others[r]);
+	   }
+
 	   return i + 1;
 	}
 

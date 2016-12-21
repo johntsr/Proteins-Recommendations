@@ -57,7 +57,8 @@ void Park_Jun::initialise(void){
 
 
 K_MedoidsPP::K_MedoidsPP( int* centers, TriangularMatrix* dPtr, int k, int n )
-	: Initializer( centers, dPtr, k, n ){}
+	: Initializer( centers, dPtr, k, n ){
+	}
 
 void K_MedoidsPP::initialise(void){
 	double* DistMin = new double[N];				// minimum distance of point "i" from cluster

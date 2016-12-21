@@ -34,6 +34,9 @@ ClusterAlgorithm::ClusterAlgorithm(Point** pointTable, TriangularMatrix* dPtr, i
 	OldCenters = new int[K];						// also for the previous centers
 	AssignedPoints = new List<AssignPair>[K];		// "K" clusters in form of lists
 
+	SumSilhouette = DBL_MAX;
+	ClusterSilhouette = new double[K];
+
 	for(int k = 0; k < K; k++){
 		OldCenters[k] = NONE;						// initially, no old centers are present
 	}
@@ -122,20 +125,8 @@ void ClusterAlgorithm::printCenters(std::ofstream& outfFile){
 	}
 }
 
-void ClusterAlgorithm::evaluate(ofstream& outfFile, bool complete){
-
-	printInfo(outfFile);
-	printCenters(outfFile);
-	outfFile << "clustering_time: " << execTime << '\n';
-
-	double SumSilhouette = 0.0;
-	double* ClusterSilhouette;
-
-	ClusterSilhouette = new double[K];
-
-	std::stringstream SilhouetteMessage;
-	SilhouetteMessage << "Silhouette: [";
-
+void ClusterAlgorithm::computeSilhouette(void){
+	SumSilhouette = 0.0;
 	for(int k = 0; k < K; k++){				// for every cluster, compute its Silhouette
 		ClusterSilhouette[k] = 0.0;
 
@@ -153,21 +144,36 @@ void ClusterAlgorithm::evaluate(ofstream& outfFile, bool complete){
 		ClusterSilhouette[k] /= AssignedPoints[k].count();
 
 		SumSilhouette += ClusterSilhouette[k];
-
-		SilhouetteMessage << ClusterSilhouette[k] << ", ";
 	}
 	SumSilhouette /= K;
+}
 
-	SilhouetteMessage << SumSilhouette << "]";
-	outfFile << SilhouetteMessage.str() << '\n';
-
-	delete[] ClusterSilhouette;
-
-	if( complete ){
-		printClusters(outfFile);
+double ClusterAlgorithm::evaluate(ofstream& outfFile, bool complete, bool print){
+	if( SumSilhouette == DBL_MAX ){
+		computeSilhouette();
 	}
 
-	outfFile << '\n' << '\n' << '\n' << '\n';
+	if( print ){
+		std::stringstream SilhouetteMessage;
+		printInfo(outfFile);
+		printCenters(outfFile);
+		outfFile << "clustering_time: " << execTime << '\n';
+		SilhouetteMessage << "Silhouette: [";
+
+		for(int k = 0; k < K; k++){
+			SilhouetteMessage << ClusterSilhouette[k] << ", ";
+		}
+
+		SilhouetteMessage << SumSilhouette << "]";
+		outfFile << SilhouetteMessage.str() << '\n';
+		if( complete ){
+			printClusters(outfFile);
+		}
+
+		outfFile << '\n' << '\n' << '\n' << '\n';
+	}
+
+	return SumSilhouette;
 }
 
 double ClusterAlgorithm::avgDistFromCluster( int i, int center ){
@@ -190,6 +196,7 @@ ClusterAlgorithm::~ClusterAlgorithm(){
 	delete[] Centers;
 	delete[] OldCenters;
 	delete[] AssignedPoints;
+	delete[] ClusterSilhouette;
 
 	delete Assign;
 	delete Init;
@@ -286,6 +293,28 @@ void ClusterAlgorithm::dummyClustering(void){
 
 
 
+ProteinsCluster::ProteinsCluster(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s)
+ : ClusterAlgorithm(pointTable, dPtr, n, k, type, k_hash, l, q, s){}
+
+
+double ProteinsCluster::evaluate(std::ofstream& outfFile, bool complete, bool print){
+	ClusterAlgorithm::evaluate(outfFile, complete, false);
+
+	if( print ){
+		outfFile << "k: " << K << endl;
+		outfFile << "s: " << SumSilhouette << endl;
+		for(int k = 0; k < K; k++){
+			for (Node<AssignPair>* inode = AssignedPoints[k].end() ; inode != NULL; inode = inode->previous() ) {
+				outfFile << PointTable[inode->data()->assigned()]->name() << " ";
+			}
+			outfFile << endl;
+		}
+	}
+	return SumSilhouette;
+}
+
+
+
 CLARA::CLARA(Point** PointTable, int N, int s, int n_, int k){
 	S = s;
 	N_ = n_;
@@ -327,9 +356,9 @@ void CLARA::run(void){
 
 }
 
-void CLARA::evaluate(std::ofstream& outfFile, bool complete){
+double CLARA::evaluate(std::ofstream& outfFile, bool complete, bool print){
 	outfFile << "CLARA, ";
-	Algorithms[minIndex]->evaluate(outfFile, complete);
+	return Algorithms[minIndex]->evaluate(outfFile, complete, print);
 }
 
 CLARA::~CLARA(){

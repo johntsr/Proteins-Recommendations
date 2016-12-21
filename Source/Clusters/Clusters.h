@@ -23,7 +23,7 @@ class Clustering{
 		void printInfo	(std::ofstream& outfFile);
 
 		virtual void run(void)=0;
-		virtual void evaluate(std::ofstream& outfFile, bool complete)=0;
+		virtual double evaluate(std::ofstream& outfFile, bool complete, bool print)=0;
 		virtual ~Clustering(){}
 };
 
@@ -42,8 +42,13 @@ class ClusterAlgorithm: public Clustering{
 		Assigner* Assign;					// Assigner object
 		Updater* Update;					// Updater object
 
+		double SumSilhouette;
+		double* ClusterSilhouette;
+
 		bool 	changes(void);					// check if changes occures after the update step
 		double 	avgDistFromCluster( int i, int center );	// used in Silhouette computation
+		void 	computeSilhouette(void);
+
 	public:
 		ClusterAlgorithm(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s);
 
@@ -52,12 +57,19 @@ class ClusterAlgorithm: public Clustering{
 
 		void printCenters(std::ofstream& outfFile);		// print the centroids
 		void printClusters(std::ofstream& outfFile);	// print the whole cluster
-		void evaluate	(std::ofstream& outfFile, bool complete);	// evaluate after run()
+
+		virtual double evaluate	(std::ofstream& outfFile, bool complete, bool print);	// evaluate after run()
 
 		virtual ~ClusterAlgorithm();
 
 		static int  runCUTests		(void);
 		static void dummyClustering	(void);
+};
+
+class ProteinsCluster: public ClusterAlgorithm{
+	public:
+		ProteinsCluster(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s);
+		double evaluate	(std::ofstream& outfFile, bool complete, bool print);
 };
 
 
@@ -78,7 +90,7 @@ class CLARA: public Clustering{
 		CLARA(Point** PointTable, int N, int s, int n_, int k);
 
 		void run		(void);
-		void evaluate(std::ofstream& outfFile, bool complete);
+		double evaluate(std::ofstream& outfFile, bool complete, bool print);
 		~CLARA();
 };
 

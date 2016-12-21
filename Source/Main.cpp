@@ -62,10 +62,10 @@ void createVectorQueryFile(void){
 }
 
 void createProteins(void){
-	ofstream file("DataSets/Proteins.csv");
+	ofstream file("DataSets/ProteinsSmall.csv");
 
-	int numConform = 1000;
-	int N = 600;
+	int numConform = 100;
+	int N = 6;
 
 	file << "numConform: " << numConform << endl;
 	file << "N: " << N << endl;
@@ -90,6 +90,17 @@ void openFile(string& path, fstream& file);
 void parseArguments(int argc, char** argv, bool& complete, string& dataPath, string& outPath, string& confPath, bool& CUTest );
 void parseConfiguration( string& confPath, int& K_clusters, int& K_hash, int& L, int& Q, int& S );
 
+int low(int N){
+	return N;
+}
+
+int medium(int N){
+	return N * sqrt(N);
+}
+
+int high(int N){
+	return N * (N - 1) / 2;
+}
 
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
@@ -107,20 +118,40 @@ int main(int argc, char *argv[]) {
 
 	int K_clusters, K_hash, L, Q, S;
 	parseConfiguration( confPath, K_clusters, K_hash, L, Q, S );
-	ProteinsManager* manager =  new MetricSpaceManager(K_clusters, K_hash, L, Q, S, complete);;
+
+	ProteinsManager* cManager =  new cRMSDManager(complete);
+
+	int ManagersNum = 7;
+	ProteinsManager* dManagers[ManagersNum];
+	dOption T[ManagersNum] = {SMALLEST, LARGEST, RANDOM, SMALLEST, LARGEST, RANDOM, SMALLEST};
+	rGenerator r[ManagersNum] = { &low, &low, &low, &medium, &medium, &medium, &high};
+	for(int i = 0; i < ManagersNum; i++){
+		dManagers[i] = new dRMSDManager( T[i], r[i], complete);
+	 }
 
 	getPath( dataPath, "Please, enter the path for the data set file" );
 	openFile(dataPath, dataFile);
 
-	dataFile >> metric;			// skip "@metric_space"
-	dataFile >> metric;			// get metric function
-
-	if( manager != NULL ){
-		manager->run(dataPath, outPath);
-		if( CUTest ){
-			manager->runCUTests();
+	if( dManagers[0] != NULL ){
+		outPath = "experim.dat";
+		ofstream file( outPath.c_str() );
+		for(int i = 0; i < ManagersNum; i++){
+			dManagers[i]->run(dataPath, outPath);
+			if( CUTest ){
+				dManagers[i]->runCUTests();
+			}
+			delete dManagers[i];
 		}
-		delete manager;
+	}
+
+	if(cManager != NULL){
+		outPath = "conform.dat";
+		ofstream file( outPath.c_str() );
+		cManager->run(dataPath, outPath);
+		if( CUTest ){
+			cManager->runCUTests();
+		}
+		delete cManager;
 	}
 
 	return 0;
