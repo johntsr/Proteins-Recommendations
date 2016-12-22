@@ -23,6 +23,7 @@ class MetricSpacePoint: public Point {
 		Quantity* 	value		(void);		// @override: maps a point into a non-negative integer value
 		Quantity* 	multiply 	(Point* p);	// @override: defines the multiplication between two points
 		Quantity* 	distance	(Point* p);	// @override
+		Quantity* 	similarity	(Point* p);	// @override
 		bool 		operator ==	(Point*); 	// @override
 		void 		print  		(void);		// @override
 		bool 		inRange		(Point*, Quantity*);// @override

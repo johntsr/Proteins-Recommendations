@@ -21,6 +21,26 @@ Quantity* EuclideanPoint::distance(Point* p){
 }
 
 // @override
+Quantity* EuclideanPoint::similarity(Point* p){
+	// just follow the definition of the e-class slides
+	Quantity* temp;
+
+	temp = multiply(p);
+	double product = temp->getDouble();						// inner product
+	delete temp;
+
+	temp = multiply(this);
+	double magnitude1 = sqrt( temp->getDouble() );			// norm(x) = inner_product(x,x)
+	delete temp;
+
+	temp = p->multiply(p);
+	double magnitude2 = sqrt( temp->getDouble() );			// same here
+	delete temp;
+
+	return new Quantity( product / ( magnitude1 * magnitude2 ) );	// compute the distance (in [0,2] )
+}
+
+// @override
 PointType EuclideanPoint::type(void){
 	return EUCLIDEAN;
 }

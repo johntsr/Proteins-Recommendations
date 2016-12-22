@@ -24,6 +24,17 @@ VectorPoint::VectorPoint(std::string name, std::string& stringLine, int dimensio
 	}
 }
 
+VectorPoint::VectorPoint(std::string name, double* coordinates, int dimension){
+	Point::Name = name;										// store the name
+
+	Dimension = dimension;									// store the dimensionality of the vector, i.e. the length of the array of the co-ordinates
+	Array = new Quantity[Dimension];						// allocate the above array
+
+	for(int i = 0; i < Dimension; i++){						// for every co-ordinate
+		Array[i] = Quantity( coordinates[i] );// and convert it to double
+	}
+}
+
 VectorPoint::VectorPoint(int dimension){
 	Point::Name = "Random Gaussian Vector";
 	Dimension 	= dimension;						// store the dimensionality of the vector, i.e. the length of the array of the co-ordinates

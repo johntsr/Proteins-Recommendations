@@ -60,6 +60,13 @@ Quantity* HammingPoint::distance(Point* p){
 }
 
 // @override
+Quantity* HammingPoint::similarity(Point* p){
+	Quantity* temp = distance(p);
+	temp->setDouble( dimension() - temp->castAsDouble() );
+	return temp;
+}
+
+// @override
 bool HammingPoint::operator == (Point* p){
 	if( dimension() != p->dimension() ){
 		return false;

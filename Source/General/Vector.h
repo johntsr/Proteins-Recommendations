@@ -14,6 +14,7 @@ class VectorPoint: public Point{
 
 		VectorPoint(int dimension);			// contruct a point from a given vector
 		VectorPoint(std::string Name, std::string& stringLine, int length);	// constructs a point parsing a string with its co-ordinates
+		VectorPoint(std::string Name, double* coordinates, int length);	// constructs a point parsing a string with its co-ordinates
 
 		std::string name		(void);		// @override: the human-readable representation of the point
 		int 		dimension	(void);		// @override: the dimensionality of the point

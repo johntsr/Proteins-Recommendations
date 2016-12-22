@@ -27,6 +27,13 @@ Quantity* CosinePoint::distance(Point* p){
 }
 
 // @override
+Quantity* CosinePoint::similarity(Point* p){
+	Quantity* temp = distance(p);
+	temp->setDouble( 1 - temp->getDouble() );
+	return temp;
+}
+
+// @override
 PointType CosinePoint::type(void){
 	return COSINE;
 }

@@ -173,6 +173,11 @@ Quantity* MetricSpacePoint::distance(Point* p){
 }
 
 // @override
+Quantity* MetricSpacePoint::similarity(Point* p){
+	return NULL;
+}
+
+// @override
 bool MetricSpacePoint::operator == (Point* p){
 	if( dimension() != p->dimension() ){
 		return false;

@@ -11,9 +11,13 @@ class EuclideanPoint: public VectorPoint {
 		EuclideanPoint(std::string Name, std::string& stringLine, int length):
 			VectorPoint(Name, stringLine, length){}
 
+		EuclideanPoint(std::string Name, double* coordinates, int length):
+			VectorPoint(Name, coordinates, length){}
+
 		EuclideanPoint(int dimension): VectorPoint(dimension){}
 
 		Quantity* 	distance	(Point* p);				// @override
+		Quantity* 	similarity	(Point* p);				// @override
 		PointType	type		(void);					// @override
 };
 

@@ -198,6 +198,11 @@ void Quantity::multiply(int times){
 	value *= times * 1.0;
 }
 
+Quantity* Quantity::mean(Quantity* q){
+	return new Quantity( (value + q->value) / 2.0 );
+}
+
+
 
 std::string QuantitySquare::getString	(void){
 	std::ostringstream parseStr;
@@ -209,6 +214,11 @@ void QuantitySquare::multiply(int times){
 	value *= times * times * 1.0;
 }
 
+Quantity* QuantitySquare::mean(Quantity* q){
+	return new QuantitySquare( (value + q->getDouble()) / 2.0 );
+}
+
+
 
 std::string QuantityBit::getString	(void){
 	std::ostringstream parseStr;
@@ -218,4 +228,10 @@ std::string QuantityBit::getString	(void){
 
 void QuantityBit::multiply(int times){
 	Bits->setFirst( Bits->count() * times );
+}
+
+Quantity* QuantityBit::mean(Quantity* q){
+	int numBits = (Bits->count() + q->getBits()->count()) / 2.0;
+	Bitset* meanBits = new Bitset( Bits->size(), numBits);
+	return new QuantityBit(meanBits, true);
 }

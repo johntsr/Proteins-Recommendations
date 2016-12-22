@@ -1,5 +1,5 @@
-#ifndef __IO_NAMAGER__
-#define  __IO_NAMAGER__
+#ifndef __PROTEIN_MANAGER__
+#define  __PROTEIN_MANAGER__
 
 #include "../General/Point.h"
 #include "../Clusters/Clusters.h"

@@ -62,6 +62,7 @@ class Quantity{
 		virtual void setBits(Bitset* u);			// store a "uint64_t"
 
 		virtual void multiply(int times);
+		virtual Quantity* mean(Quantity* q);
 
 		void copy(Quantity* q);
 
@@ -70,6 +71,8 @@ class Quantity{
 				delete Bits;
 			}
 		}
+
+
 };
 
 
@@ -85,6 +88,7 @@ class QuantitySquare: public Quantity {
 		std::string getString	(void);
 
 		void multiply(int times);
+		Quantity* mean(Quantity* q);
 };
 
 class QuantityBit: public Quantity {
@@ -100,6 +104,7 @@ class QuantityBit: public Quantity {
 		std::string getString	(void);
 
 		void multiply(int times);
+		Quantity* mean(Quantity* q);
 };
 
 

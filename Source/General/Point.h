@@ -19,6 +19,7 @@ class Point{
 		virtual Quantity*	multiply	(Point* )=0;			// multiplication of a point with another point
 		virtual Quantity* 	value		(void)=0;				// an integer non-negative value representing the point
 		virtual Quantity* 	distance	(Point*)=0;				// computes the distance between 2 points
+		virtual Quantity* 	similarity	(Point*)=0;
 		virtual bool 		operator ==	(Point*)=0;				// defines the equality of 2 points
 		virtual bool 		inRange		(Point*, Quantity*)=0;	// determines whether a point is in range "R"
 		virtual Quantity* 	maxDistance	(void)=0;				// returns the maximum possible distance between 2 points
