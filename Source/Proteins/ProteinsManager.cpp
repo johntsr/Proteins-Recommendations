@@ -107,7 +107,6 @@ void ProteinsManager::fillTable(std::string dataPath){
 	}
 
 	d = new TriangularMatrix(numConform, PointTable);
-
 }
 
 void ProteinsManager::finalise(void){
@@ -146,7 +145,7 @@ Point* cRMSDManager::getNextPoint(ifstream& queryFile){				// depends on the for
 
 	stringstream name;
 	count++;
-	name << count + 1;
+	name << count + 1;	
 	return new MetricSpacePoint( name.str(), numConform, N, count, Configuration);
 }
 
