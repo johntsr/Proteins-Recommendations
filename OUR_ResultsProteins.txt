@@ -1,1 +1,0 @@
-r: 15 , T = 0 , k = 13, silhouette = 0.435693 execution time = 0.01012 secs.

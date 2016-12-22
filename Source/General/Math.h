@@ -109,12 +109,13 @@ class Math{													// class used for it's static functions
 
 
 
-
-	static void sort( double* keys, int* others , int n){
+	template<typename T>
+	static void sort( double* keys, T* others , int n){
 		quicksort_body( keys, others, 0, n-1);
 	}
 
-	static void quicksort_body(double* keys, int* others, int p, int r){
+	template<typename T>
+	static void quicksort_body(double* keys, T* others, int p, int r){
 		int q;
 		if( p < r ){
 	   	// divide and conquer
@@ -124,7 +125,8 @@ class Math{													// class used for it's static functions
 	   }
 	}
 
-	static int partition( double* keys, int* others, int p, int r) {
+	template<typename T>
+	static int partition( double* keys, T* others, int p, int r) {
 	   double x;
 	   int j, i, temp;
 
@@ -155,8 +157,9 @@ class Math{													// class used for it's static functions
 	   return i + 1;
 	}
 
-	static void swap(int* a, int* b){
-		int temp=*a;
+	template<typename T>
+	static void swap(T* a, T* b){
+		T temp=*a;
 		*a=*b;
 		*b=temp;
 	}

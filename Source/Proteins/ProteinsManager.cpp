@@ -65,7 +65,9 @@ void ProteinsManager::runTests(ofstream& outfFile){
 	double bestScore = DBL_MAX;
 	double bestTime = 0.0;
 	Algorithm = NULL;
-	for( int clusters = 2; clusters < 30; clusters++){
+	int times = 0;
+	int UpperBound = log2(numConform) * 5;
+	for( int clusters = 2; clusters < UpperBound; clusters++){
 		ProteinsCluster* tempClustering = new ProteinsCluster(PointTable, d, numConform, clusters, 4, -1, -1, -1, -1);
 
 		clock_t start = clock();		// start measuring time
@@ -85,6 +87,11 @@ void ProteinsManager::runTests(ofstream& outfFile){
 		}
 		else{
 			delete tempClustering;
+		}
+
+		times++;
+		if( times % 10 == 0){
+			std::cout << "Done " << times << "!" << '\n';
 		}
 	}
 	evaluate(outfFile);
@@ -156,6 +163,12 @@ cRMSDManager::~cRMSDManager(){
 ***************** dRMSDManager class methods *********************
 ******************************************************************/
 
+int dRMSDManager::R = 0;
+bool dRMSDManager::firstTime = true;
+Pair* dRMSDManager::Indexes = NULL;
+
+double* dRMSDManager::Configuration = NULL;
+
 dRMSDManager::dRMSDManager(dOption t, rGenerator func, bool complete)
 : ProteinsManager(complete) {
 	Func = func;
@@ -165,58 +178,88 @@ dRMSDManager::dRMSDManager(dOption t, rGenerator func, bool complete)
 Point* dRMSDManager::getNextPoint(ifstream& queryFile){				// depends on the format of the file
 	static int count = -1;
 
-	int R = Func(N);
-
-	double* Configuration = new double[N*3];
-	for(int i = 0; i < 3*N; i++){
-		queryFile >> Configuration[i];
-	}
-
 	stringstream name;
 	count++;
 	name << count + 1;
-
 	stringstream rCoordinates;
 
-	if( T == SMALLEST || T == LARGEST ){
-		int DistLength = N * (N - 1) / 2;
-		double* Distances = new double[DistLength];
-		for(int i = 0, d = 0; i < 3*N; i += 3){
-			for(int j = 0; j < i; j += 3, d++){
+	if( Configuration == NULL ){
+		Configuration = new double[numConform*N*3];
+	}
+
+	if( count < numConform ){
+		for(int i = 0; i < 3*N; i++){
+			queryFile >> Configuration[N*3*count + i];
+		}
+	}
+
+
+	if( firstTime ){
+		firstTime = false;
+		R = Func(N);
+		Indexes = new Pair[R];
+
+
+		if( T == SMALLEST || T == LARGEST ){
+			int DistLength = N * (N - 1) / 2;
+			Pair* tempIndexes = new Pair[DistLength];
+			double* Distances = new double[DistLength];
+
+			for(int i = 0, d = 0; i < 3*N; i += 3){
+				for(int j = 0; j < i; j += 3, d++){
+					tempIndexes[d].i = i;
+					tempIndexes[d].j = j;
+
+					double dist = (Configuration[i] - Configuration[j]) * (Configuration[i] - Configuration[j]);
+					dist += (Configuration[i+1] - Configuration[j+1]) * (Configuration[i+1] - Configuration[j+1]);
+					dist += (Configuration[i+2] - Configuration[j+2]) * (Configuration[i+2] - Configuration[j+2]);
+					Distances[d] = dist;
+				}
+			}
+
+			Math::sort(Distances, tempIndexes, DistLength);
+
+			if( T == SMALLEST ){
+				for(int r = 0; r < R; r++){
+					Indexes[r] = tempIndexes[r];
+					rCoordinates << Distances[r] << " ";
+				}
+			}
+			else{
+				for(int r = DistLength - R; r < DistLength; r++){
+					Indexes[r - (DistLength - R) ] = tempIndexes[r];
+					rCoordinates << Distances[r] << " ";
+				}
+			}
+
+			delete[] tempIndexes;
+			delete[] Distances;
+		}
+		else{
+			for( int r = 0; r < R; r++ ){
+				int i = ( (int)Math::dRand(0,N) ) * 3;
+				int j = ( (int)Math::dRand(0,N) ) * 3;
+				Indexes[r].i = i;
+				Indexes[r].j = j;
+
 				double dist = (Configuration[i] - Configuration[j]) * (Configuration[i] - Configuration[j]);
 				dist += (Configuration[i+1] - Configuration[j+1]) * (Configuration[i+1] - Configuration[j+1]);
 				dist += (Configuration[i+2] - Configuration[j+2]) * (Configuration[i+2] - Configuration[j+2]);
-				Distances[d] = dist;
+				rCoordinates << dist << " ";
 			}
 		}
-
-		Math::sort(Distances, NULL, DistLength);
-
-		if( T == SMALLEST ){
-			for(int i = 0; i < R; i++){
-				rCoordinates << Distances[i] << " ";
-			}
-		}
-		else{
-			for(int i = DistLength - R; i < DistLength; i++){
-				rCoordinates << Distances[i] << " ";
-			}
-		}
-
-		delete[] Distances;
 	}
 	else{
 		for( int r = 0; r < R; r++ ){
-			int i = ( (int)Math::dRand(0,N) ) * 3;
-			int j = ( (int)Math::dRand(0,N) ) * 3;
+			int i = N*3*(count % numConform) + Indexes[r].i;
+			int j = N*3*(count % numConform) + Indexes[r].j;
+
 			double dist = (Configuration[i] - Configuration[j]) * (Configuration[i] - Configuration[j]);
 			dist += (Configuration[i+1] - Configuration[j+1]) * (Configuration[i+1] - Configuration[j+1]);
 			dist += (Configuration[i+2] - Configuration[j+2]) * (Configuration[i+2] - Configuration[j+2]);
 			rCoordinates << dist << " ";
 		}
 	}
-
-	delete[] Configuration;
 
 	string buffer = rCoordinates.str();
 	return new EuclideanPoint(name.str(), buffer, R);
@@ -226,4 +269,16 @@ void dRMSDManager::evaluate(std::ofstream& outfFile){
 	double Silhouette = Algorithm->evaluate(outfFile, Complete, false);
 	outfFile 	<< "r: " << Func(N) << " , T = " << T << " , k = " << K_clusters
 				<< ", silhouette = " << Silhouette << " execution time = " << BestTime << " secs." << endl;
+}
+
+dRMSDManager::~dRMSDManager(){
+	if( Indexes != NULL ){
+		delete[] Indexes;
+		Indexes = NULL;
+	}
+
+	if( Configuration != NULL ){
+		delete[] Configuration;
+		Configuration = NULL;
+	}
 }

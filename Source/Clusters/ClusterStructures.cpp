@@ -15,18 +15,17 @@ TriangularMatrix::TriangularMatrix(int n, Point** PointTable ){
 	Zero = new Quantity(0.0);
 
 
-	clock_t start = clock();		// start measuring time
+	// clock_t start = clock();		// start measuring time
 
 	for(int i = 0; i < N; i++){
 		for(int j = 0; j < i; j++){
 			Quantity* temp = PointTable[i]->distance( PointTable[j] );	// fill the distance matrix
-			// std::cout << temp->castAsDouble() << " mfndskj" << '\n';
 			d[i][j] = temp;
 		}
 	}
 
-	clock_t end = clock();			// stop measuring
-	std::cout << "time needed = " <<  (end - start)/(double)CLOCKS_PER_SEC << '\n';
+	// clock_t end = clock();			// stop measuring
+	// std::cout << "time needed = " <<  (end - start)/(double)CLOCKS_PER_SEC << '\n';
 
 }
 

@@ -1,0 +1,7 @@
+r: 369 , T = 0 , k = 17, silhouette = 0.441554 execution time = 0.005754 secs.
+r: 369 , T = 1 , k = 22, silhouette = 0.468642 execution time = 0.006558 secs.
+r: 369 , T = 2 , k = 6, silhouette = 0.396554 execution time = 0.003822 secs.
+r: 7088 , T = 0 , k = 12, silhouette = 0.459546 execution time = 0.004877 secs.
+r: 7088 , T = 1 , k = 21, silhouette = 0.466366 execution time = 0.005967 secs.
+r: 7088 , T = 2 , k = 15, silhouette = 0.464813 execution time = 0.004989 secs.
+r: 67896 , T = 0 , k = 18, silhouette = 0.405238 execution time = 0.00619 secs.

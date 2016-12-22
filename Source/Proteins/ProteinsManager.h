@@ -53,8 +53,19 @@ public:
 
 enum dOption { SMALLEST, LARGEST, RANDOM };
 
+struct Pair{
+	int i;
+	int j;
+};
+
 class dRMSDManager: public ProteinsManager{
 	private:
+		static int R;
+		static bool firstTime;
+		static Pair* Indexes;
+
+		static double* Configuration;
+
 		rGenerator Func;
 		dOption T;
 
@@ -63,7 +74,7 @@ class dRMSDManager: public ProteinsManager{
 
 	public:
 		dRMSDManager(dOption t, rGenerator func, bool complete);
-
+		~dRMSDManager();
 };
 
 
