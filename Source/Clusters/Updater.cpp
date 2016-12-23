@@ -36,10 +36,10 @@ double Updater::PAM_swap(int m, int t){
 	for( int cluster = 0; cluster < K; cluster++ ){
 		for (Node<AssignPair>* inode = AssignedPoints[cluster].start() ; inode != NULL; inode = inode->next() ) {
 			if( m == cluster ){
-				J2 += (*d)( inode->data()->assigned() , t )->castAsDouble();
+				J2 += (*d)( inode->data()->assigned() , t );
 			}
 			else{
-				J2 += (*d)( inode->data()->assigned() , Centers[cluster] )->castAsDouble();
+				J2 += (*d)( inode->data()->assigned() , Centers[cluster] );
 			}
 		}
 	}
@@ -76,9 +76,9 @@ double Updater::computeDJ(int cluster, int m, int t, AssignPair* iPair ){
 	int i = iPair->assigned();
 	int c2 = iPair->center2();
 
-	double dist_it = (*d)(i, t)->castAsDouble();
-	double dist_ic	= (*d)(i, Centers[cluster] )->castAsDouble();
-	double dist_ic2 = (*d)(i, c2)->castAsDouble();
+	double dist_it = (*d)(i, t);
+	double dist_ic	= (*d)(i, Centers[cluster] );
+	double dist_ic2 = (*d)(i, c2);
 
 	if ( cluster == m ) {
 		if( dist_it < dist_ic2 ){
@@ -116,7 +116,7 @@ AssignPair* LloydsUpdate::findt(int m){
 		// iterate again over the cluster of "m" center, take all possible pairs
 		// compute the sum of distances between "t" and the other points
 		for (Node<AssignPair>* inode = AssignedPoints[m].start() ; inode != NULL; inode = inode->next() ) {
-			temp += (*d)( inode->data()->assigned() , tnode->data()->assigned()  )->castAsDouble();
+			temp += (*d)( inode->data()->assigned() , tnode->data()->assigned()  );
 		}
 
 		if( temp < min ){			// if a better sum is found

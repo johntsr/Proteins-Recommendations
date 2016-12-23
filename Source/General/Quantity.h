@@ -22,11 +22,6 @@ class Bitset{
 		Bitset* operator ^ (Bitset& b);
 		unsigned int count(void);
 
-		unsigned int distance(Bitset& b);
-
-		Bitset* maxDistance(void);
-
-		bool nonZero(void);
 		void setFirst(int count);
 		void set(int position);
 
@@ -43,7 +38,6 @@ class Quantity{
 		double value;
 		Bitset* Bits;
 		bool toDelete;
-		bool isDouble;
 
 	public:
 
@@ -52,61 +46,17 @@ class Quantity{
 		Quantity(std::string bitString);
 		Quantity(Bitset* bits, bool del);
 
-		virtual std::string getString	(void);	// string representation of the content
 		virtual double 		getDouble	(void);	// parse the stored info as "double"
 		virtual Bitset* 	getBits		(void);	// parse the stored info as "uint64_t"
 
-		virtual double castAsDouble		(void);
-
 		virtual void setDouble(double d);				// store a "double"
 		virtual void setBits(Bitset* u);			// store a "uint64_t"
-
-		virtual void multiply(double times);
-		virtual Quantity* mean(Quantity* q);
-
-		void copy(Quantity* q);
 
 		virtual ~Quantity(){
 			if( toDelete ){
 				delete Bits;
 			}
 		}
-
-
 };
-
-
-class QuantitySquare: public Quantity {
-	public:
-
-		QuantitySquare(void): Quantity(){}
-		QuantitySquare(double d): Quantity(d){}
-		QuantitySquare(uint64_t u): Quantity(u){}
-
-		// Euclidean stores it's distances as squares (for speed's sake)
-		// so, the string representation must return the square root
-		std::string getString	(void);
-
-		void multiply(double times);
-		Quantity* mean(Quantity* q);
-};
-
-class QuantityBit: public Quantity {
-	public:
-
-		QuantityBit(void): Quantity(){}
-		QuantityBit(double d): Quantity(d){}
-		QuantityBit(std::string bitString): Quantity(bitString){}
-		QuantityBit(Bitset* bits, bool del): Quantity(bits, del){}
-
-		// Hamming stores it's distances as "uint64_t"
-		// so, the string representation must parse the "value" field as "uint64_t"
-		std::string getString	(void);
-
-		void multiply(double times);
-		Quantity* mean(Quantity* q);
-};
-
-
 
 #endif

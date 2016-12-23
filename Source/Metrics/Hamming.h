@@ -19,11 +19,9 @@ class HammingPoint: public Point {
 		int 		dimension	(void);		// @override: the dimensionality of the point
 		Quantity* 	multiply 	(Point* p);	// @override: defines the multiplication between two points
 		Quantity* 	value		(void);		// @override: maps a point into a non-negative integer value
-		Quantity* 	distance	(Point* p);	// @override
-		Quantity* 	similarity	(Point* p);	// @override
+		double 		distance	(Point* p);	// @override
+		double 		similarity	(Point* p);	// @override
 		bool 		operator ==	(Point*); 	// @override
-		bool 		inRange		(Point*, Quantity*);// @override
-		Quantity* 	maxDistance	(void);		// @override
 		void 		print  		(void);		// @override
 		PointType	type		(void);		// @override
 		~HammingPoint();

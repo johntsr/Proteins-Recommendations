@@ -23,14 +23,14 @@ void Park_Jun::initialise(void){
 	double sumT = 0.0;
 	for(int j = 0; j < N; j++){
 		for(int t = 0; t < N; t++){
-			sumT += (*d)(j,t)->castAsDouble();
+			sumT += (*d)(j,t);
 		}
 	}
 
 	for(int i = 0; i < N; i++){
 		v[i] = 0.0;
 		for(int j = 0; j < N; j++){
-			v[i] += (*d)(i,j)->castAsDouble() / sumT;
+			v[i] += (*d)(i,j) / sumT;
 		}
 	}
 
@@ -92,9 +92,9 @@ void K_MedoidsPP::initialise(void){
 
 double K_MedoidsPP::minFromCluster(int i, int k){
 
-	double min = (*d)(i, Centers[0])->castAsDouble();
+	double min = (*d)(i, Centers[0]);
 	for( int center = 1; center < k; center++){					// iterate over the centers
-		double temp = (*d)(i, Centers[center])->castAsDouble();	// store the distance from point "i"
+		double temp = (*d)(i, Centers[center]);					// store the distance from point "i"
 		if( temp < min ){										// if the distance is smaller than "min"
 			min = temp;											// update "min"
 		}

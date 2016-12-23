@@ -17,8 +17,8 @@ class CosinePoint: public VectorPoint {
 
 		CosinePoint(int dimension): VectorPoint(dimension){}
 
-		Quantity* 	distance	(Point* p);				// @override
-		Quantity* 	similarity	(Point* p);				// @override
+		double 	distance	(Point* p);				// @override
+		double 	similarity	(Point* p);				// @override
 		PointType	type		(void);					// @override
 };
 

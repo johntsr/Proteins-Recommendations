@@ -21,9 +21,7 @@ class VectorPoint: public Point{
 		Quantity* 	value		(void);		// @override: maps a point into a non-negative integer value
 		Quantity*	multiply 	(Point* p);	// @override: defines the multiplication between two points
 		bool 		operator ==	(Point*); 	// @override: defines the equality of 2 points
-		Quantity*	maxDistance	(void);		// @override: returns the maximum possible distance between 2 points
 		void 		print  		(void);		// @override
-		bool		inRange		(Point* p, Quantity* R);	// @override
 		virtual ~VectorPoint();
 };
 

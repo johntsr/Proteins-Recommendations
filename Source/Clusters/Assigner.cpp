@@ -19,7 +19,7 @@ void Assigner::assignBrute(int i, int& center, int& center2){
 	double min  = 0.0;										// just an initial value
 	double min2 = 0.0;										// just an initial value
 	for(int k = 0; k < K; k++){								// iterate over centers to find the min distance from the point
-		double temp = (*d)( i, Centers[k] )->castAsDouble();// get the distance
+		double temp = (*d)( i, Centers[k] );				// get the distance
 
 		if( center == NONE || temp < min ){					// if it is smaller than the so-far-best
 			min = temp;										// update the distance
@@ -58,7 +58,7 @@ double PAM_Simple::assign(void){
 		AssignPair* pair = new AssignPair( i , Centers[center2] );// create a new pair (point, second best center)
 		AssignedPoints[center].insertAtStart( pair , true );	// and insert it in the cluster
 
-		J += (*d)(i, Centers[center])->castAsDouble();			// update the objective Function
+		J += (*d)(i, Centers[center]);							// update the objective Function
 	}
 
 	return J;
@@ -124,10 +124,10 @@ Reverse_LSH::Reverse_LSH(TriangularMatrix* dPtr, Point** pointTable, int n, int*
 
 	for( int i = 0; i < N; i++ ){
 		LSH->insert( PointTable[i] );					// store all the points
-		PointMap->insert( new PointIndex(i,PointTable[i] ), true );	// map every point to its index in the "global" table
+		PointMap->insert( new PointIndex(i, PointTable[i]), true );	// map every point to its index in the "global" table
 	}
 
-	Barrier = new BarrierPoint();						// create the barrier point
+	Barrier = new BarrierPoint();						// create the arrier point
 	LSH->prepareBarrier(Barrier);						// inform the LSH about the barrier
 
 	// for every point, store information
@@ -139,7 +139,7 @@ Reverse_LSH::Reverse_LSH(TriangularMatrix* dPtr, Point** pointTable, int n, int*
 double Reverse_LSH::assign(void){
 
 	Assigner::flush();												// reset the clusters
-	Quantity* R = minDistBetweenCenters();							// find the min distance between 2 centers (initialize "R" of query)
+	double R = minDistBetweenCenters();							// find the min distance between 2 centers (initialize "R" of query)
 	for(int i = 0; i < N; i++){										// initially, no best and second best centers are present
 		NearestCenter[i] = NONE;
 		NearestCenter2[i] = NONE;
@@ -160,7 +160,7 @@ double Reverse_LSH::assign(void){
 			}
 		}
 		LSH->markPoints();											// mark the assigned points to skip them in next queries
-		R->multiply(2);												// prepare the "R" for the query of the next loop
+		R = PointTable[0]->multiplyDouble(R, 2.0);					// prepare the "R" for the query of the next loop
 	} while( countEmpty < countBarrier );							// until too many queries return empty results
 
 	assignRestToCenters();											// assign the rest of the points to their centers
@@ -169,13 +169,12 @@ double Reverse_LSH::assign(void){
 	for( int i = 0; i < N; i++){									// for every point
 		AssignPair* pair = new AssignPair( i, Centers[NearestCenter2[i]] );	// pair of a point and its second closest center
 		AssignedPoints[ NearestCenter[i] ].insertAtStart( pair, true );	// add that pair to the cluster
-		J += (*d)(i, Centers[NearestCenter[i]] )->castAsDouble();		// update the value of the objective function
+		J += (*d)(i, Centers[NearestCenter[i]] );					// update the value of the objective function
 	}
 
 	LSH->unmarkPoints();											// before exit, reset the inner structures of the LSH
 
 	delete[] ResultPoints;
-	delete R;
 	return J;
 }
 
@@ -199,7 +198,7 @@ void Reverse_LSH::assignToCenters(List<Point,Point* >* ResultPoints, int k){
 			NearestCenter[i] = k;					// then make this center the best center
 		}
 		else{										// now, a best center has been found
-			if( (*d)(i, Centers[k])->castAsDouble() < (*d)(i, Centers[NearestCenter[i]] )->castAsDouble() ){	// if an even better center has been found
+			if( (*d)(i, Centers[k]) < (*d)(i, Centers[NearestCenter[i]] ) ){	// if an even better center has been found
 				NearestCenter2[i] = NearestCenter[i];							// update it
 				NearestCenter[i] = k;
 			}
@@ -207,7 +206,7 @@ void Reverse_LSH::assignToCenters(List<Point,Point* >* ResultPoints, int k){
 				if( NearestCenter2[i] == NONE ){
 					NearestCenter2[i] = k;
 				}
-				else if( (*d)(i, Centers[k])->castAsDouble() < (*d)(i, Centers[NearestCenter2[i]] )->castAsDouble() ){
+				else if( (*d)(i, Centers[k]) < (*d)(i, Centers[NearestCenter2[i]] ) ){
 					NearestCenter2[i] = k;
 				}
 			}
@@ -215,20 +214,17 @@ void Reverse_LSH::assignToCenters(List<Point,Point* >* ResultPoints, int k){
 	}
 }
 
-Quantity* Reverse_LSH::minDistBetweenCenters(void){
-	Quantity* minDist  = PointTable[0]->maxDistance();				// initialise to infinity
-	Quantity* toReturn = minDist;									// keep a reference to it, need to delete it
+double Reverse_LSH::minDistBetweenCenters(void){
+	double minDist  = DBL_MAX;										// initialise to infinity
 	for(int k1 = 0; k1 < K; k1++){									// for every
 		for( int k2 = 0; k2 < k1; k2++ ){							// 	pair of clusters
-			Quantity* temp = (*d)(Centers[k1] , Centers[k2]);
-			if( temp->castAsDouble() < minDist->castAsDouble() ){	// if a better pair is found
+			double temp = (*d)(Centers[k1] , Centers[k2]);
+			if( temp < minDist ){									// if a better pair is found
 				minDist = temp;										// keep its distance
 			}
 		}
 	}
-
-	toReturn->copy(minDist);
-	return toReturn;
+	return minDist;
 }
 
 Reverse_LSH::~Reverse_LSH(){

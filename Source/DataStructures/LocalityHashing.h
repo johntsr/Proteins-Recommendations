@@ -41,7 +41,7 @@ class LocalHashTable{
 
 		}
 
-		void inRange( U point, Quantity* R, List<T,U>& ResultPoints ){
+		void inRange( U point, double R, List<T,U>& ResultPoints ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in
 			// "ResultPoints"	: list of Points I discover in the above range
@@ -50,7 +50,7 @@ class LocalHashTable{
 			}
 		}
 
-		void inRangeBarrier( U point, Quantity* R, List<T,U>& ResultPoints ){
+		void inRangeBarrier( U point, double R, List<T,U>& ResultPoints ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in
 			// "ResultPoints"	: list of Points I discover in the above range
@@ -68,7 +68,7 @@ class LocalHashTable{
 
 		}
 
-		void nearestNeighbour( U point, Quantity*& minDist, U& bestPoint ){
+		void nearestNeighbour( U point, double& minDist, U& bestPoint ){
 			// "bestPoint": the point closest to "point"
 			// "minDist" : the distance of "bestPoint" from "point"
 
@@ -82,7 +82,7 @@ class LocalHashTable{
 
 		}
 
-		void nearestNeighbourBrute( U point, Quantity*& minDist, U& bestPoint ){
+		void nearestNeighbourBrute( U point, double& minDist, U& bestPoint ){
 			// "bestPoint": the point closest to "point"
 			// "minDist" : the distance of "bestPoint" from "point"
 			minDist = point->maxDistance();

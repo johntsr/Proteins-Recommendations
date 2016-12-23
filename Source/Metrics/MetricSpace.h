@@ -7,7 +7,7 @@ double computeDistance(double* x, double* y, int N);
 // an actual point of the hamming space
 class MetricSpacePoint: public Point {
 	private:
-		Quantity** 	DistanceMatrix;			// the "row" of distances from other points
+		double* 	DistanceMatrix;			// the "row" of distances from other points
 		int 		Length;					// the size of the above table
 		int 		Position;				// the index of this point in the distance table
 		double* 	Configuration;
@@ -17,17 +17,14 @@ class MetricSpacePoint: public Point {
 
 		MetricSpacePoint(std::string name, int length, int n, int position, double* configuration);
 
-
 		std::string name		(void);		// @override: the human-readable representation of the point
 		int 		dimension	(void);		// @override: the dimensionality of the point
 		Quantity* 	value		(void);		// @override: maps a point into a non-negative integer value
 		Quantity* 	multiply 	(Point* p);	// @override: defines the multiplication between two points
-		Quantity* 	distance	(Point* p);	// @override
-		Quantity* 	similarity	(Point* p);	// @override
+		double 		distance	(Point* p);	// @override
+		double 		similarity	(Point* p);	// @override
 		bool 		operator ==	(Point*); 	// @override
 		void 		print  		(void);		// @override
-		bool 		inRange		(Point*, Quantity*);// @override
-		Quantity* 	maxDistance	(void);		// @override
 		PointType	type		(void);		// @override
 
 		~MetricSpacePoint();

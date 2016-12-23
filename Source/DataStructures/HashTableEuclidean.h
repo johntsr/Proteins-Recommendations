@@ -24,7 +24,7 @@ class BucketStructureEuclidean: public PointBucketStructure<T,U>{		// bucket use
 			// true: flag indicating to delete the point when the program terminates
 		}
 
-		void inRange( U point, Quantity* R, List<T,U>& ResultPoints, uint64_t ID ){
+		void inRange( U point, double R, List<T,U>& ResultPoints, uint64_t ID ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in
 			// "ResultPoints"	: list of Points I discover in the above range
@@ -33,13 +33,11 @@ class BucketStructureEuclidean: public PointBucketStructure<T,U>{		// bucket use
 			Node<T>* nodeBucket 	= PointBucketStructure<T,U>::BucketList->start();		// iterator for the list of points
 			Node<uint64_t>* nodeID 	= IDList->start();									// iterator for the list of IDs
 
-			double Rd = R->getDouble();				// the range I am interested in
-			double Rd2 = Rd *Rd;					// for speed's sake, Euclidean Points don't compute their actual distances
-			Quantity R2( Rd2 );						// they compute their squares, so I have to convert it exxplicitely
+			double R2 = R *R;					// for speed's sake, Euclidean Points don't compute their actual distances
 
 			for( ; nodeBucket != NULL; nodeBucket = nodeBucket->next(), nodeID = nodeID->next() ) {		// iterate over the bucket
 				if( 		*(nodeID->data()) == ID									// if 2 Points have the same ID
-						&& point->inRange( nodeBucket->data(), &R2 )				// and they are neighbours
+						&& point->inRange( nodeBucket->data(), R2 )				// and they are neighbours
 						&& !ResultPoints.contains(nodeBucket->data()) ){			// and the neighbour is found for the first time
 					ResultPoints.insertAtStart( nodeBucket->data(), false );		// add the neighbour to the results
 				}
@@ -92,7 +90,7 @@ class BucketStructureEuclidean: public PointBucketStructure<T,U>{		// bucket use
 
 		}
 
-		void inRangeBarrier( U point, Quantity* R, List<T,U>& ResultPoints, uint64_t ID ){
+		void inRangeBarrier( U point, double R, List<T,U>& ResultPoints, uint64_t ID ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in
 			// "ResultPoints"	: list of Points I discover in the above range
@@ -101,16 +99,13 @@ class BucketStructureEuclidean: public PointBucketStructure<T,U>{		// bucket use
 			Node<T>* nodeBucket 	= PointBucketStructure<T,U>::BucketList->start();		// iterator for the list of points
 			Node<uint64_t>* nodeID 	= IDList->start();									// iterator for the list of IDs
 
-			double Rd = R->getDouble();				// the range I am interested in
-			double Rd2 = Rd *Rd;					// for speed's sake, Euclidean Points don't compute their actual distances
-			Quantity R2( Rd2 );						// they compute their squares, so I have to convert it exxplicitely
-
+			double R2 = R *R;					// for speed's sake, Euclidean Points don't compute their actual distances
 
 			for( ; !( PointBucketStructure<T,U>::Barrier == nodeBucket->data() );
 			 ) {			// iterate over the bucket
 
 				if( 		*(nodeID->data()) == ID									// if 2 Points have the same ID
-						&& point->inRange( nodeBucket->data(), &R2 )				// and they are neighbours
+						&& point->inRange( nodeBucket->data(), R2 )				// and they are neighbours
 						&& !ResultPoints.contains(nodeBucket->data()) ){			// and the neighbour is found for the first time
 					ResultPoints.insertAtStart( nodeBucket->data(), false );		// add the neighbour to the results
 
@@ -128,7 +123,7 @@ class BucketStructureEuclidean: public PointBucketStructure<T,U>{		// bucket use
 
 		}
 
-		void nearestNeighbour( U point, Quantity*& minDist, U& bestPoint, uint64_t ID, int& timesChanged, int barrier ){
+		void nearestNeighbour( U point, double& minDist, U& bestPoint, uint64_t ID, int& timesChanged, int barrier ){
 			// "point"  	: the Point whose nearest neighbour I am searching
 			// "bestPoint"	: the point closest to "point" so far
 			// "minDist" 	: the distance of "bestPoint" from "point"
@@ -137,12 +132,10 @@ class BucketStructureEuclidean: public PointBucketStructure<T,U>{		// bucket use
 			Node<T>* nodeBucket 	= PointBucketStructure<T,U>::BucketList->start();	// iterator for the list of points
 			Node<uint64_t>* nodeID 	= IDList->start();								// iterator for the list of IDs
 
-			//std::cout << "minDist before: " << minDist->getString() << std::endl;
 			for( ; nodeBucket != NULL; nodeBucket = nodeBucket->next(), nodeID = nodeID->next() ) {	// iterate over the bucket
 				if( 	*(nodeID->data()) == ID										// if 2 Points have the same ID
 					&& 	point->inRange( nodeBucket->data(), minDist ) ){			// and point is closer than "bestPoint"
 
-						delete minDist;												// delete the previous value
 						minDist =  point->distance( nodeBucket->data() );			// update the "bestPoint"
 						bestPoint = nodeBucket->data();								// and its corresponding distance
 						timesChanged++;												// one more change happened
@@ -182,7 +175,7 @@ class EuclideanHashTable: public PointHashTable<T,U>{						// class representing
 			PointHashTable<T,U>::PointCount++;											// another point is added
 		}
 
-		void inRange( U point, Quantity* R, List<T,U>& ResultPoints ){
+		void inRange( U point, double R, List<T,U>& ResultPoints ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in
 			// "ResultPoints"	: list of Points I discover in the above range
@@ -192,7 +185,7 @@ class EuclideanHashTable: public PointHashTable<T,U>{						// class representing
 			BucketTableEuclidean[ position % PointHashTable<T,U>::BucketsNum ]->inRange( point, R, ResultPoints, position );
 		}
 
-		void inRangeBarrier( U point, Quantity* R, List<T,U>& ResultPoints ){
+		void inRangeBarrier( U point, double R, List<T,U>& ResultPoints ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in
 			// "ResultPoints"	: list of Points I discover in the above range
@@ -202,7 +195,7 @@ class EuclideanHashTable: public PointHashTable<T,U>{						// class representing
 			BucketTableEuclidean[ position % PointHashTable<T,U>::BucketsNum ]->inRangeBarrier( point, R, ResultPoints, position );
 		}
 
-		void nearestNeighbour( U point, Quantity*& minDist, U& bestPoint, int& timesChanged, int barrier ){
+		void nearestNeighbour( U point, double& minDist, U& bestPoint, int& timesChanged, int barrier ){
 			// "bestPoint": the point closest to "point"
 			// "minDist" : the distance of "bestPoint" from "point"
 

@@ -101,20 +101,6 @@ void VectorPoint::print(void){
 	std::cout << name() << std::endl;
 }
 
-// @override
-Quantity* VectorPoint::maxDistance(void){			// maximum possible distanve between 2 points
-	return new Quantity( (double)DBL_MAX);			// from <float.h>, the maximum value a double may have ("parsed" in 64 bits)
-}
-
-// @override
-bool VectorPoint::inRange(Point* p, Quantity* R){
-	Quantity* temp = distance( p );
-	bool result = temp->getDouble() < Point::C * R->getDouble();	// p is in range, if our distance in smaller than R
-	delete temp;
-	return result;
-}
-
-
 VectorPoint::~VectorPoint(){
 	delete[] Array;
 }

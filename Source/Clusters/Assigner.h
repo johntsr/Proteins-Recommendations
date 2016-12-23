@@ -1,8 +1,6 @@
 #ifndef __ASSIGNER__
 #define __ASSIGNER__
 
-#include <iostream>
-
 #include "ClusterStructures.h"
 
 #include "../DataStructures/LinearHash.h"
@@ -49,7 +47,6 @@ class PAM_Simple: public Assigner{
 class PointIndex{
 	public:
 		Point* point;
-
 		int i;								// the index of the point
 
 		PointIndex(int n, Point* p){
@@ -58,7 +55,6 @@ class PointIndex{
 		}
 
 		operator Point*(void){
-			// std::cout << " hash i = " << i << std::endl;
 			return point;
 		}
 
@@ -89,7 +85,7 @@ class Reverse_LSH: public Assigner{
 		int L;
 
 		void lshArguments(int& TableSize, hash_function**& HashFunctions, int LSH_K, int L);	// initialize LSH parameters
-		Quantity* minDistBetweenCenters(void);													// find the min distance between 2 centers
+		double minDistBetweenCenters(void);													// find the min distance between 2 centers
 		void assignToCenters(List<Point,Point* >* ResultPoints, int k);							// assign points of an LSH query to clusters
 		void assignRestToCenters(void);															// finally, assign the rest points to clusters
 

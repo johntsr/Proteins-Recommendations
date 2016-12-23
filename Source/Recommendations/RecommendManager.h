@@ -67,7 +67,7 @@ class NNRecommendManager: public RecommendManager{
 		int barrier;
 		int P;
 
-		Quantity* getRadius		(void);
+		double  getRadius		(void);
 		void 	fillTable		(std::string dataPath);
 		void 	runTests		(std::ofstream& outfFile);
 

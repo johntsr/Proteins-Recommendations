@@ -29,16 +29,16 @@ class AssignPair{
 // so, we keep the strict lower triangular matrix
 class TriangularMatrix{
 	private:
-		Quantity*** d;		// the table (stored as pointer to rows)
+		double** d;		// the table (stored as pointer to rows)
 		int 	N;			// the number of rows
 
-		Quantity* Zero;		// special value for the main diagonal
+		double Zero;
 
 	public:
 
 		TriangularMatrix(int n, Point** PointTable );
 
-		Quantity*& operator ()(int i, int j);		// access to the d[i][j] element
+		double& operator ()(int i, int j);		// access to the d[i][j] element
 
 		void print(void);
 

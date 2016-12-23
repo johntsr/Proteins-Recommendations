@@ -14,10 +14,6 @@ class Math{													// class used for it's static functions
 		static double dRand(){								// returns numbers in [0,1)
 			return ( rand() / ( RAND_MAX + 1.0 ) );
 		}
-		//
-		// static double dRand(int M, int N){					// returns numbers in [M,N]
-		// 	return M + ( rand() / ( RAND_MAX + 1.0 ) ) * (N - M );
-		// }
 
 		static double dRand(double M, double N){					// returns numbers in [M,N)
 			return M + ( rand() / ( RAND_MAX + 1.0 ) ) * (N - M );

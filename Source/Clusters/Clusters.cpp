@@ -186,7 +186,7 @@ double ClusterAlgorithm::avgDistFromCluster( int i, int center ){
 	double sum = 0.0;
 	// iterate over the aboce cluster, compute the sum
 	for (Node<AssignPair>* inode = AssignedPoints[k].start() ; inode != NULL; inode = inode->next() ) {
-		sum += (*d)( i, inode->data()->assigned() )->castAsDouble();
+		sum += (*d)( i, inode->data()->assigned() );
 	}
 
 	return sum / AssignedPoints[k].count();	// return mean value
@@ -248,16 +248,15 @@ void ClusterAlgorithm::dummyClustering(void){
 	CU_ASSERT( DummyPointTable[4] == DummyPointTable[4] );
 	CU_ASSERT( DummyPointTable[0]->dimension() == 6 );
 
-	Quantity* dist = DummyPointTable[0]->distance( DummyPointTable[0] );
-	CU_ASSERT( dist->castAsDouble() == 0.0 );
-	delete dist;
+	double dist = DummyPointTable[0]->distance( DummyPointTable[0] );
+	CU_ASSERT( dist == 0.0 );
 
 	TriangularMatrix dummyD( 5, DummyPointTable );
 	for(int i = 0; i < 5; i++){
 		for(int j = 0; j < 5; j++){
-			CU_ASSERT( dummyD(i,j)->castAsDouble() == dummyD(j,i)->castAsDouble()  );
+			CU_ASSERT( dummyD(i,j) == dummyD(j,i) );
 			if( i == j ){
-				CU_ASSERT( dummyD(i,j)->castAsDouble() == 0.0 );
+				CU_ASSERT( dummyD(i,j) == 0.0 );
 			}
 		}
 	}

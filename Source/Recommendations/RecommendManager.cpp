@@ -39,8 +39,6 @@ RecommendManager::RecommendManager(bool complete) {
 	NumItems = 0;
 	PointTable = NULL;
 	Complete = complete;
-	// BestTime = 0.0;
-	// K_clusters = 0;
 }
 
 Point* RecommendManager::getNextPoint(ifstream& queryFile){				// depends on the format of the file
@@ -145,9 +143,7 @@ void RecommendManager::estimateRating(int user, List<Point, Point*>* Neighbors){
 	for (Node<Point>* node = Neighbors->start() ; node != NULL; node = node->next(), index++ ) {
 		int neighbor = (*PointMap)[node->data()]->i;
 		neighborIndexes[index] = neighbor;
-		Quantity* temp = PointTable[user]->similarity( PointTable[neighbor] );
-		neighborSim[index] = temp->getDouble();
-		delete temp;
+		neighborSim[index] = PointTable[user]->similarity( PointTable[neighbor] );
 	}
 
 	for(int item = 0; item < NumItems; item++){
@@ -290,8 +286,8 @@ void NNRecommendManager::fillTable(std::string dataPath){
 	}
 }
 
-Quantity* NNRecommendManager::getRadius(void){
-	return new Quantity(0.5);
+double NNRecommendManager::getRadius(void){
+	return 0.5;
 }
 
 void NNRecommendManager::runTests(std::ofstream& outFile){
@@ -332,7 +328,7 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(Point* point){
 	int Tolerance = P / 4;
 
 	List<Point, Point*> *ResultPointsSmall, *ResultPointsBig;
-	Quantity *RSmall, *RBig;
+	double RSmall, RBig;
 
 	ResultPointsSmall = new List<Point, Point*>();
 	ResultPointsBig = new List<Point, Point*>();
@@ -352,8 +348,6 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(Point* point){
 
 	// if( ResultPointsSmall->count() == P ){
 	if( abs(ResultPointsSmall->count() - P) < Tolerance ){
-		delete RSmall;
-		delete RBig;
 		delete ResultPointsBig;
 		return ResultPointsSmall;
 	}
@@ -363,7 +357,7 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(Point* point){
 
 		do{
 			ResultPointsBig->flush();
-			RBig->multiply(2.0);
+			RBig = PointTable[0]->multiplyDouble(RBig, 2.0);
 			LSH->inRange( point, RBig, *ResultPointsBig );
 			times++;
 			// std::cout << "RBig = " << RBig->getDouble() << " -> " << ResultPointsBig->count() << std::endl;
@@ -371,14 +365,11 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(Point* point){
 
 		// if( ResultPointsBig->count() == P || times == BarrierTimes ){
 		if( abs(ResultPointsBig->count() - P) < Tolerance || times == BarrierTimes ){
-			delete RBig;
-			delete RSmall;
 			delete ResultPointsSmall;
 			return ResultPointsBig;
 		}
 
-		RSmall->setDouble(RBig->getDouble());
-		RSmall->multiply(0.5);
+		RSmall = PointTable[0]->multiplyDouble(RBig, 0.5);
 	}
 	else{
 
@@ -387,7 +378,8 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(Point* point){
 
 		do{
 			ResultPointsSmall->flush();
-			RSmall->multiply(0.5);
+			RSmall = PointTable[0]->multiplyDouble(RSmall, 0.5);
+
 			LSH->inRange( point, RSmall, *ResultPointsSmall );
 			times++;
 			// std::cout << "RSmall = " << RSmall->getDouble() << " -> " << ResultPointsSmall->count() << std::endl;
@@ -395,20 +387,18 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(Point* point){
 
 		// if( ResultPointsSmall->count() == P || times == BarrierTimes ){
 		if(  abs(ResultPointsSmall->count() - P) < Tolerance || times == BarrierTimes ){
-			delete RSmall;
-			delete RBig;
 			delete ResultPointsBig;
 			return ResultPointsSmall;
 		}
 
-		RBig->setDouble(RSmall->getDouble());
-		RBig->multiply(2.0);
+		RBig = PointTable[0]->multiplyDouble(RSmall, 2.0);
+
 	}
 
 	// std::cout  << std::endl << std::endl;
 
 	do {
-		Quantity* RMean = RSmall->mean(RBig);
+		double RMean = (RSmall + RBig) / 2.0;
 		List<Point, Point*> *ResultPointsMean = new List<Point, Point*>();
 		LSH->inRange( point, RMean, *ResultPointsMean );
 
@@ -421,21 +411,16 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(Point* point){
 
 		// if( ResultPointsMean->count() == P || times == BarrierTimes ){
 		if( abs(ResultPointsMean->count() - P) < Tolerance || times == BarrierTimes ){
-			delete RSmall;
-			delete RMean;
-			delete RBig;
 			delete ResultPointsBig;
 			delete ResultPointsSmall;
 			return ResultPointsMean;
 		}
 		else if( ResultPointsMean->count() < P ){
-			delete RSmall;
 			RSmall = RMean;
 			delete ResultPointsSmall;
 			ResultPointsSmall = ResultPointsMean;
 		}
 		else{
-			delete RBig;
 			RBig = RMean;
 			delete ResultPointsBig;
 			ResultPointsBig = ResultPointsMean;

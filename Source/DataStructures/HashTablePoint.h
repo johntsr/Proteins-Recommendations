@@ -24,7 +24,7 @@ class PointBucketStructure{								// class representing the bucket of a hashtab
 			BucketList->insertAtStart( value , false);	// insert it at the start of the list
 		}
 
-		void inRange( U point, Quantity* R, List<T,U>& ResultPoints ){
+		void inRange( U point, double R, List<T,U>& ResultPoints ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in
 			// "ResultPoints"	: list of Points I discover in the above range
@@ -56,7 +56,7 @@ class PointBucketStructure{								// class representing the bucket of a hashtab
 			BucketList->insertAtEnd(data, false);
 		}
 
-		virtual void inRangeBarrier( U point, Quantity* R, List<T,U>& ResultPoints ){
+		virtual void inRangeBarrier( U point, double R, List<T,U>& ResultPoints ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in
 			// "ResultPoints"	: list of Points I discover in the above range
@@ -75,14 +75,13 @@ class PointBucketStructure{								// class representing the bucket of a hashtab
 			}
 		}
 
-		void nearestNeighbour( U point, Quantity*& minDist, U& bestPoint, int& timesChanged, int barrier ){
+		void nearestNeighbour( U point, double& minDist, U& bestPoint, int& timesChanged, int barrier ){
 			// "point"  	: the Point whose nearest neighbour I am searching
 			// "bestPoint"	: the point closest to "point" so far
 			// "minDist" 	: the distance of "bestPoint" from "point"
 
 			for (Node<T>* node = BucketList->start() ; node != NULL; node = node->next() ) {		// iterate over the bucket
 				if( point->inRange( node->data(), minDist ) ){				// if a point is closer than "bestPoint"
-					delete minDist;											// delete the previous value
 					minDist = point->distance( node->data() );				// update the "bestPoint"
 					bestPoint = node->data();								// and its corresponding distance
 					timesChanged++;											// one more change happened
@@ -146,7 +145,7 @@ class PointHashTable{									// class representing a hash table of points
 			}
 		}
 
-		virtual void inRange( U point, Quantity* R, List<T,U>& ResultPoints ){
+		virtual void inRange( U point, double R, List<T,U>& ResultPoints ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in
 			// "ResultPoints"	: list of Points I discover in the above range
@@ -155,7 +154,7 @@ class PointHashTable{									// class representing a hash table of points
 			BucketTable[position]->inRange( point, R, ResultPoints );	// search in the appropriate bucket for possible neighbours
 		}
 
-		virtual void inRangeBarrier( U point, Quantity* R, List<T,U>& ResultPoints ){
+		virtual void inRangeBarrier( U point, double R, List<T,U>& ResultPoints ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in
 			// "ResultPoints"	: list of Points I discover in the above range
@@ -164,7 +163,7 @@ class PointHashTable{									// class representing a hash table of points
 			BucketTable[position]->inRangeBarrier( point, R, ResultPoints );	// search in the appropriate bucket for possible neighbours
 		}
 
-		virtual void nearestNeighbour( U point, Quantity*& minDist, U& bestPoint, int& timesChanged,  int barrier){
+		virtual void nearestNeighbour( U point, double& minDist, U& bestPoint, int& timesChanged,  int barrier){
 			// "bestPoint": the point closest to "point"
 			// "minDist" : the distance of "bestPoint" from "point"
 			uint64_t position = H_function->hash( point );				// hash the point

@@ -88,9 +88,9 @@ MetricSpacePoint::MetricSpacePoint(std::string name, int length, int n, int posi
 	Configuration = configuration;
 
 	Length = length;
-	DistanceMatrix = new Quantity*[Length];
+	DistanceMatrix = new double[Length];
 	for(int i = 0; i < Length; i++){
-		DistanceMatrix[i] = new Quantity(-1.0);
+		DistanceMatrix[i] = -1.0;
 	}
 
 	double Xc[3] = { 0.0, 0.0, 0.0};
@@ -132,18 +132,17 @@ Quantity* MetricSpacePoint::multiply (Point* p){	// defines the multiplication b
 }
 
 // @override
-Quantity* MetricSpacePoint::distance(Point* p){
+double MetricSpacePoint::distance(Point* p){
 	Quantity* temp = p->value();
 	int position = (int)temp->getDouble();
 	delete temp;
 
-	if( DistanceMatrix[position]->getDouble() == -1.0 ){
-		DistanceMatrix[position]->setDouble(-2.0);
-		temp = p->distance(this);
-		// std::cout << "position = " << position <<  std::endl;
-		DistanceMatrix[position]->setDouble( temp->getDouble() );
+	if( DistanceMatrix[position] ==-1.0 ){
+		DistanceMatrix[position] = -2.0;
+		DistanceMatrix[position] = p->distance(this);
+		return DistanceMatrix[position];
 	}
-	else if( DistanceMatrix[position]->getDouble() == -2.0 ){
+	else if( DistanceMatrix[position] == -2.0 ){
 		// calculate distance, store in DistanceMatrix[ position ]
 		MetricSpacePoint* pMetric = (MetricSpacePoint*)p;
 		double* otherConfiguration = pMetric->Configuration;
@@ -158,23 +157,20 @@ Quantity* MetricSpacePoint::distance(Point* p){
 
 		double result = computeDistance(x, y, N);
 		// return new Quantity(result);
-		temp = new Quantity(result);
 
 		delete[] x;
 		delete[] y;
+
+		return result;
 	}
 	else{
-		// return new Quantity( DistanceMatrix[ position ]->getDouble() );
-		temp = new Quantity( DistanceMatrix[ position ]->getDouble() );
+		return DistanceMatrix[ position ];
 	}
-
-	return temp;
-
 }
 
 // @override
-Quantity* MetricSpacePoint::similarity(Point* p){
-	return NULL;
+double MetricSpacePoint::similarity(Point* p){
+	return DBL_MAX;
 }
 
 // @override
@@ -190,34 +186,14 @@ bool MetricSpacePoint::operator == (Point* p){
 void MetricSpacePoint::print(void){
 	std::cout 	<< "\t(" << name() << ")"  << std::endl;
 	for(int i = 0; i < Length; i++){
-		std::cout << DistanceMatrix[i]->getString() << " ";
+		std::cout << DistanceMatrix[i] << " ";
 	}
 	std::cout << std::endl << std::endl;
 }
 
-// @override
-bool MetricSpacePoint::inRange(Point* p, Quantity* R){
-	Quantity* temp = distance( p );
-	if( temp->getDouble() == 0.0 ){
-		delete temp;
-		return false;
-	}
-
-	bool result = temp->getDouble() < Point::C * R->getDouble();
-	delete temp;
-	return result;
-}
-
-// @override
-Quantity* MetricSpacePoint::maxDistance(void){
-	return new Quantity(DBL_MAX);
-}
-
 MetricSpacePoint::~MetricSpacePoint(){
-	for(int i = 0; i < Length; i++){
-		delete DistanceMatrix[i];
-	}
 	delete[] DistanceMatrix;
+	delete[] Configuration;
 }
 
 // @override
@@ -230,15 +206,11 @@ PointType MetricSpacePoint::type(void){
 ******************************************************************/
 
 double MetricSpace_h::compute(Point* x){
-	Quantity* temp = x->distance(x1);
-	double d1 = temp->getDouble();
+	double d1 = x->distance(x1);
 	d1 *= d1;
-	delete temp;
 
-	temp = x->distance(x2);
-	double d2 = temp->getDouble();
+	double d2 = x->distance(x2);
 	d2 *= d2;
-	delete temp;
 
 	return ( d1 + d2 - dd ) / ( _2d );
 }
@@ -250,10 +222,7 @@ MetricSpace_h::MetricSpace_h(Point** Points, int n){
 	x1 = Points[ (int)Math::dRand(0, n) ];
 	x2 = Points[ (int)Math::dRand(0, n) ];
 
-	Quantity* temp = x1->distance(x2);
-
-	double tempd = temp->getDouble();
-	delete temp;
+	double tempd = x1->distance(x2);
 
 	_2d = tempd * 2;
 	dd = tempd * tempd;

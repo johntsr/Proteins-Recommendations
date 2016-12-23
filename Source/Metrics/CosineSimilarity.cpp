@@ -7,7 +7,7 @@
 
 
 // @override
-Quantity* CosinePoint::distance(Point* p){
+double CosinePoint::distance(Point* p){
 	// just follow the definition of the e-class slides
 	Quantity* temp;
 
@@ -23,14 +23,12 @@ Quantity* CosinePoint::distance(Point* p){
 	double magnitude2 = sqrt( temp->getDouble() );			// same here
 	delete temp;
 
-	return new Quantity( 1.0 - ( product / ( magnitude1 * magnitude2 ) )  );	// compute the distance (in [0,2] )
+	return 1.0 - ( product / ( magnitude1 * magnitude2 ) );	// compute the distance (in [0,2] )
 }
 
 // @override
-Quantity* CosinePoint::similarity(Point* p){
-	Quantity* temp = distance(p);
-	temp->setDouble( 1 - temp->getDouble() );
-	return temp;
+double CosinePoint::similarity(Point* p){
+	return 1 - distance(p);
 }
 
 // @override

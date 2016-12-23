@@ -26,12 +26,12 @@ std::string HammingPoint::name(void) {			// the human-readable representation of
 
 // @override
 int HammingPoint::dimension(void) {				// the dimensionality of the point
-	return Value->size();							// the number of bits a hamming point has
+	return Value->size();						// the number of bits a hamming point has
 }
 
 // @override
 Quantity* HammingPoint::value(void){			// maps a point into a non-negative integer value
-	return new Quantity(Value, false);					// simply the bitstring itself
+	return new Quantity(Value, false);			// simply the bitstring itself
 }
 
 // @override
@@ -44,26 +44,25 @@ Quantity* HammingPoint::multiply (Point* p){		// defines the multiplication betw
 	delete temp1;
 	delete temp2;
 
-	return new QuantityBit(mul, true);
+	return new Quantity(mul, true);
 }
 
 // @override
-Quantity* HammingPoint::distance(Point* p){
+double HammingPoint::distance(Point* p){
 	Quantity* temp1 = value();
 	Quantity* temp2 = p->value();
 	Bitset* dist = (*temp1->getBits()) ^ (*temp2->getBits());
-
+	int count = dist->count();
 	delete temp1;
 	delete temp2;
+	delete dist;
 
-	return new QuantityBit(dist, true);
+	return count * 1.0;
 }
 
 // @override
-Quantity* HammingPoint::similarity(Point* p){
-	Quantity* temp = distance(p);
-	temp->setDouble( dimension() - temp->castAsDouble() );
-	return temp;
+double HammingPoint::similarity(Point* p){
+	return dimension() - distance(p);
 }
 
 // @override
@@ -72,29 +71,13 @@ bool HammingPoint::operator == (Point* p){
 		return false;
 	}
 
-	Quantity* dist = distance(p);
-	bool ret = !( dist->castAsDouble() > 0.0 );
-	delete dist;
-	return ret;
+	return !( distance(p) > 0.0 );
 }
 
 // @override
 void HammingPoint::print(void){
 	std::cout 	<<  value()->getBits()->getString()
 				<< "\t(" << name() << ")"  << std::endl;
-}
-
-// @override
-bool HammingPoint::inRange(Point* p, Quantity* R){
-	Quantity* dist = distance( p );
-	bool result = dist->castAsDouble() < ( (Point::C) * R->castAsDouble());
-	delete dist;			// p is in range, if our distance in smaller than R
-	return result;
-}
-
-// @override
-Quantity* HammingPoint::maxDistance(void){
-	return new QuantityBit( Value->maxDistance(), true );
 }
 
 HammingPoint::~HammingPoint(){
@@ -114,13 +97,12 @@ Hamming_h::Hamming_h(int length){						// length of the input bitstring
 	int position = length * Math::dRand();				// randomply pick a bit to "peek"
 	Bitset* temp = new Bitset(length);
 	temp->set(position);
-	Mask = new HammingPoint( "mask", temp );	// create a point out of this mask
+	Mask = new HammingPoint( "mask", temp );			// create a point out of this mask
 }
 
 uint64_t Hamming_h::hash(Point* p ){					// map a multi-dimensional hamming point into an integer
-
 	Quantity* temp = p->multiply(Mask);
-	bool nonZero = temp->getBits()->nonZero();			// bitwise AND between point and mask => bit exrtaction
+	bool nonZero = temp->getBits()->count() > 0;		// bitwise AND between point and mask => bit exrtaction
 	delete temp;
 	if (  nonZero ){									// non negative result means the bit was 1
 		return 1;

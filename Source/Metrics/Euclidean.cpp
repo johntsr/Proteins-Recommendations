@@ -7,7 +7,7 @@
 
 
 // @override
-Quantity* EuclideanPoint::distance(Point* p){
+double EuclideanPoint::distance(Point* p){
 	// just follow the definition of the e-class slides
 	Quantity* Array1  = value() ;					// get array of co-ordinates for this point
 	Quantity* Array2  = p->value();					// as well as fro p
@@ -17,27 +17,12 @@ Quantity* EuclideanPoint::distance(Point* p){
 		distance += diff * diff;	// euclidean norm
 	}
 
-	return new QuantitySquare(distance);
+	return distance;
 }
 
 // @override
-Quantity* EuclideanPoint::similarity(Point* p){
-	// just follow the definition of the e-class slides
-	Quantity* temp;
-
-	temp = multiply(p);
-	double product = temp->getDouble();						// inner product
-	delete temp;
-
-	temp = multiply(this);
-	double magnitude1 = sqrt( temp->getDouble() );			// norm(x) = inner_product(x,x)
-	delete temp;
-
-	temp = p->multiply(p);
-	double magnitude2 = sqrt( temp->getDouble() );			// same here
-	delete temp;
-
-	return new Quantity( product / ( magnitude1 * magnitude2 ) );	// compute the distance (in [0,2] )
+double EuclideanPoint::similarity(Point* p){
+	return 1.0 / ( distance(p) + 1.0  );			// compute the distance (in [0,2] )
 }
 
 // @override
