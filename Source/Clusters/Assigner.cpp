@@ -7,8 +7,6 @@
 #include "../Metrics/Euclidean.h"
 #include "../Metrics/MetricSpace.h"
 
-Point** PointIndex::PointTable = NULL;
-
 Assigner::Assigner(TriangularMatrix* dPtr, int n, int* centers, int k, List<AssignPair>* assignedPoints ){
 	d = dPtr;
 	N = n;
@@ -109,8 +107,6 @@ Reverse_LSH::Reverse_LSH(TriangularMatrix* dPtr, Point** pointTable, int n, int*
 	: Assigner(dPtr, n, centers, k, assignedPoints ) {
 
 	PointTable = pointTable;				// table of points for the assigner
-	PointIndex::PointTable = PointTable;	// table of points for the map<Point, int>
-
 
 	L = l;
 	int LSH_K = k_hash;
@@ -128,7 +124,7 @@ Reverse_LSH::Reverse_LSH(TriangularMatrix* dPtr, Point** pointTable, int n, int*
 
 	for( int i = 0; i < N; i++ ){
 		LSH->insert( PointTable[i] );					// store all the points
-		PointMap->insert( new PointIndex(i), true );	// map every point to its index in the "global" table
+		PointMap->insert( new PointIndex(i,PointTable[i] ), true );	// map every point to its index in the "global" table
 	}
 
 	Barrier = new BarrierPoint();						// create the barrier point

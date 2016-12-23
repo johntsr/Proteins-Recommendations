@@ -49,6 +49,7 @@ class ClusterAlgorithm: public Clustering{
 		double 	avgDistFromCluster( int i, int center );	// used in Silhouette computation
 		void 	computeSilhouette(void);
 
+
 	public:
 		ClusterAlgorithm(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s);
 
@@ -57,6 +58,7 @@ class ClusterAlgorithm: public Clustering{
 
 		void printCenters(std::ofstream& outfFile);		// print the centroids
 		void printClusters(std::ofstream& outfFile);	// print the whole cluster
+		List<AssignPair>* getCluster(int k);
 
 		virtual double evaluate	(std::ofstream& outfFile, bool complete, bool print);	// evaluate after run()
 

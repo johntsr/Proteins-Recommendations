@@ -61,7 +61,7 @@ class Quantity{
 		virtual void setDouble(double d);				// store a "double"
 		virtual void setBits(Bitset* u);			// store a "uint64_t"
 
-		virtual void multiply(int times);
+		virtual void multiply(double times);
 		virtual Quantity* mean(Quantity* q);
 
 		void copy(Quantity* q);
@@ -87,7 +87,7 @@ class QuantitySquare: public Quantity {
 		// so, the string representation must return the square root
 		std::string getString	(void);
 
-		void multiply(int times);
+		void multiply(double times);
 		Quantity* mean(Quantity* q);
 };
 
@@ -103,7 +103,7 @@ class QuantityBit: public Quantity {
 		// so, the string representation must parse the "value" field as "uint64_t"
 		std::string getString	(void);
 
-		void multiply(int times);
+		void multiply(double times);
 		Quantity* mean(Quantity* q);
 };
 

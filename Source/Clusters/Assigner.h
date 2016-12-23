@@ -1,6 +1,8 @@
 #ifndef __ASSIGNER__
 #define __ASSIGNER__
 
+#include <iostream>
+
 #include "ClusterStructures.h"
 
 #include "../DataStructures/LinearHash.h"
@@ -46,18 +48,22 @@ class PAM_Simple: public Assigner{
 // class used to map a point to its index in the "global" table (index = 1,...,N-1)
 class PointIndex{
 	public:
-		static Point** PointTable;			// the "global" table, shared among all objects of the class
+		Point* point;
 
 		int i;								// the index of the point
 
-		PointIndex(int n){ i = n; }
+		PointIndex(int n, Point* p){
+			i = n;
+			point = p;
+		}
 
 		operator Point*(void){
-			return PointTable[i];
+			// std::cout << " hash i = " << i << std::endl;
+			return point;
 		}
 
 		bool operator == (Point* p){
-			return PointTable[i] == p;
+			return point == p;
 		}
 
 		static int hash(Point* p){

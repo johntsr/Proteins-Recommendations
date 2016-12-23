@@ -1,4 +1,4 @@
-#include "ProteinsManager.h"
+#include "RecommendManager.h"
 #include "../General/Math.h"
 
 using namespace std;
@@ -87,7 +87,7 @@ void getPath(string& path, string message);
 
 void openFile(string& path, fstream& file);
 
-void parseArguments(int argc, char** argv, string& dataPath, string& outCPath, string& outDPath, bool& CUTest );
+void parseArguments(int argc, char** argv, string& dataPath, string& outPath, bool& CUTest );
 
 
 int low(int N){
@@ -109,55 +109,33 @@ int main(int argc, char *argv[]) {
 	//createVectorQueryFile();
 	// createProteins();
 
-	string dataPath, outCPath, outDPath;
+	string dataPath, outPath;
 	fstream dataFile;
 	bool complete = false;
 	bool CUTest = false;
 
-	parseArguments(argc, argv, dataPath, outCPath, outDPath, CUTest );
+	parseArguments(argc, argv, dataPath, outPath, CUTest );
 
-	ProteinsManager* cManager =  new cRMSDManager(complete);
-
-	int ManagersNum = 7;
-	ProteinsManager* dManagers[ManagersNum];
-	dOption T[ManagersNum] = {SMALLEST, LARGEST, RANDOM, SMALLEST, LARGEST, RANDOM, SMALLEST};
-	rGenerator r[ManagersNum] = { &low, &low, &low, &medium, &medium, &medium, &high};
-	for(int i = 0; i < ManagersNum; i++){
-		dManagers[i] = new dRMSDManager( T[i], r[i], complete);
-	 }
+	RecommendManager* manager =  new NNRecommendManager(complete);
 
 	getPath( dataPath, "Please, enter the path for the data set file" );
 	openFile(dataPath, dataFile);
 
-	if( dManagers[0] != NULL ){
-		ofstream file( outDPath.c_str() );
-		for(int i = 0; i < ManagersNum; i++){
-			dManagers[i]->run(dataPath, outDPath);
-			if( CUTest ){
-				dManagers[i]->runCUTests();
-			}
-		}
-
-		for(int i = 0; i < ManagersNum; i++){
-			delete dManagers[i];
-		}
-	}
-
-	if(cManager != NULL){
-		ofstream file( outCPath.c_str() );
-		cManager->run(dataPath, outCPath);
+	if(manager != NULL){
+		ofstream file( outPath.c_str() );
+		manager->run(dataPath, outPath);
 		if( CUTest ){
-			cManager->runCUTests();
+			manager->runCUTests();
 		}
-		delete cManager;
+		delete manager;
 	}
 
 	return 0;
 }
 
-void parseArguments(int argc, char** argv, string& dataPath, string& outCPath, string& outDPath, bool& CUTest){
+void parseArguments(int argc, char** argv, string& dataPath, string& outPath, bool& CUTest){
 
-	dataPath = outCPath = outDPath = "";
+	dataPath = outPath = "";
 	CUTest = false;
 
 	for(int i = 0 ; i < argc; i++){
@@ -165,12 +143,8 @@ void parseArguments(int argc, char** argv, string& dataPath, string& outCPath, s
 			dataPath = argv[i+1];
 			i++;
 		}
-		else if( !strcmp( "-od", argv[i] ) ){
-			outDPath = argv[i+1];
-			i++;
-		}
-		else if( !strcmp( "-oc", argv[i] ) ){
-			outCPath = argv[i+1];
+		else if( !strcmp( "-o", argv[i] ) ){
+			outPath = argv[i+1];
 			i++;
 		}
 		else if( !strcmp( "-cu", argv[i] ) ){

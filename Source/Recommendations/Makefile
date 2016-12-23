@@ -88,17 +88,17 @@ $(DIR_BUILD)Main.o: $(SOURCE) $(HEADER) mkdir
 mkdir:
 	mkdir -p $(DIR_BUILD)
 
-#runSmall:
-#	./$(OUT) -d ../../DataSets/bio_small_input.dat -od experim.dat -oc conform.dat
+runSmall:
+	./$(OUT) -d ../../DataSets/yahoo_music_small.dat -o results_small.dat
 
-#runMedium:
-#	./$(OUT) -d ../../DataSets/bio_medium_input.dat -od experim.dat -oc conform.dat
+runMedium:
+	./$(OUT) -d ../../DataSets/yahoo_music_big.dat -o results_big.dat
 
-#debug:
-#	gdb --args ./$(OUT) -d ../../DataSets/bio_small_input.dat -od experim.dat -oc conform.dat
+debug:
+	gdb --args ./$(OUT) -d ../../DataSets/yahoo_music_small.dat -o results_small.dat
 
-#valgrind:
-#	valgrind --leak-check=full --show-leak-kinds=all ./$(OUT) -d ../../DataSets/RecommendationsSmall.csv -od experim.dat -oc conform.dat > log.txt 2>&1
+valgrind:
+	valgrind --leak-check=full --show-leak-kinds=all ./$(OUT) -d ../../DataSets/yahoo_music_small.dat -o results_small.dat > log.txt 2>&1
 
 
 # clean house

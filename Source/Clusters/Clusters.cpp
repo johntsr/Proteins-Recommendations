@@ -291,6 +291,9 @@ void ClusterAlgorithm::dummyClustering(void){
 	}
 }
 
+List<AssignPair>* ClusterAlgorithm::getCluster(int k){
+	return &(AssignedPoints[k]);
+}
 
 
 ProteinsCluster::ProteinsCluster(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s)

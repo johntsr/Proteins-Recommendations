@@ -194,7 +194,7 @@ void Quantity::setBits(Bitset* bits){
 	isDouble = false;
 }
 
-void Quantity::multiply(int times){
+void Quantity::multiply(double times){
 	value *= times * 1.0;
 }
 
@@ -202,15 +202,13 @@ Quantity* Quantity::mean(Quantity* q){
 	return new Quantity( (value + q->value) / 2.0 );
 }
 
-
-
 std::string QuantitySquare::getString	(void){
 	std::ostringstream parseStr;
 	parseStr << sqrt( getDouble() );
 	return parseStr.str();
 }
 
-void QuantitySquare::multiply(int times){
+void QuantitySquare::multiply(double times){
 	value *= times * times * 1.0;
 }
 
@@ -219,14 +217,13 @@ Quantity* QuantitySquare::mean(Quantity* q){
 }
 
 
-
 std::string QuantityBit::getString	(void){
 	std::ostringstream parseStr;
 	parseStr << getBits()->getString();
 	return parseStr.str();
 }
 
-void QuantityBit::multiply(int times){
+void QuantityBit::multiply(double times){
 	Bits->setFirst( Bits->count() * times );
 }
 
