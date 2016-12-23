@@ -39,6 +39,7 @@ class BarrierPoint: public Point{
 		Quantity*	multiply	(Point* p){ return NULL; }
 		Quantity* 	value		(void){ return NULL; }
 		Quantity* 	distance	(Point* p){ return NULL; }
+		Quantity* 	similarity	(Point* p){ return NULL; }
 		bool 		operator ==	(Point* p){ return (Point*)this == p; }
 		bool 		inRange		(Point* p, Quantity* q){ return false; }
 		Quantity* 	maxDistance	(void){ return NULL; }

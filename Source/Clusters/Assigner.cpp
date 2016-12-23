@@ -131,7 +131,7 @@ Reverse_LSH::Reverse_LSH(TriangularMatrix* dPtr, Point** pointTable, int n, int*
 		PointMap->insert( new PointIndex(i), true );	// map every point to its index in the "global" table
 	}
 
-	Barrier = new BarrierPoint();						// create the arrier point
+	Barrier = new BarrierPoint();						// create the barrier point
 	LSH->prepareBarrier(Barrier);						// inform the LSH about the barrier
 
 	// for every point, store information
