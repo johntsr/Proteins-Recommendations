@@ -1,6 +1,7 @@
 #ifndef __DOUBLE_LIST__
 #define __DOUBLE_LIST__
 
+#include "../General/Math.h"
 #include  <stdio.h>
 #include  <stdlib.h>
 #include  <string.h>
@@ -243,6 +244,15 @@ class List{
 
 		Node<T>* 	insertSorted(  T* Data, bool del ){
 			return insert( findPosition( Data ), Data, del);
+		}
+
+		Node<T>* 	insertRandom(  T* Data, bool del ){
+			Node<T>* randPrev = start();
+			int times = (int)Math::dRand(0.0, count());
+			for(; times > 0; times--){
+				randPrev = randPrev->next();
+			}
+			return insert(randPrev, Data, del);
 		}
 
 		T* removeFirst(U Data, Node<T>* _start = NULL, Node<T>* _end = NULL){

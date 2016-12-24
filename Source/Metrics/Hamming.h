@@ -1,6 +1,7 @@
 #ifndef __HAMMING__
 #define __HAMMING__
 
+#include "../DataStructures/DoubleList.h"
 #include "../General/Point.h"
 #include "../General/HashFunction.h"
 #include "../General/Quantity.h"
@@ -13,6 +14,7 @@ class HammingPoint: public Point {
 
 	public:
 		HammingPoint(std::string name, std::string value);
+		HammingPoint(std::string name, List<Pair>* ratingList, int dimension);
 		HammingPoint(std::string name, Bitset* bits);
 
 		std::string name		(void);		// @override: the human-readable representation of the point

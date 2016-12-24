@@ -3,11 +3,23 @@
 
 #include <string>
 #include <stdint.h>
+#include <bitset>
+
+struct Pair{
+	int Item;
+	int Rating;
+
+	Pair(int item, int rating){
+		Item = item;
+		Rating = rating;
+	}
+};
 
 class Bitset{
 	private:
-		bool* Array;
+		std::bitset<64>* Array;
 		int Size;
+		int Dimension;
 
 		int Count;
 	public:
@@ -16,7 +28,7 @@ class Bitset{
 
 		~Bitset();
 
-		int size(void);
+		int dimension(void);
 
 		Bitset* operator & (Bitset& b);
 		Bitset* operator ^ (Bitset& b);

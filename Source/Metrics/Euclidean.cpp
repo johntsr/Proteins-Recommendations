@@ -6,27 +6,85 @@
 #include <limits.h>
 
 
+// // @override
+// double EuclideanPoint::distance(Point* p){
+// 	// just follow the definition of the e-class slides
+// 	Quantity* Array1  = value() ;					// get array of co-ordinates for this point
+// 	Quantity* Array2  = p->value();					// as well as for p
+// 	double distance = 0.0;							// the distance is gradually builh here
+// 	for( int i = 0; i < dimension() ; i++){
+// 		double diff = ( Array1[i].getDouble() - Array2[i].getDouble() );
+// 		distance += diff * diff;	// euclidean norm
+// 	}
+//
+// 	return distance;
+// }
+//
+// // @override
+// double EuclideanPoint::similarity(Point* p){
+// 	return 1.0 / ( distance(p) + 1.0  );			// compute the distance (in [0,2] )
+// }
+//
+// // @override
+// PointType EuclideanPoint::type(void){
+// 	return EUCLIDEAN;
+// }
+//
+//
+
+
+
 // @override
-double EuclideanPoint::distance(Point* p){
-	// just follow the definition of the e-class slides
-	Quantity* Array1  = value() ;					// get array of co-ordinates for this point
-	Quantity* Array2  = p->value();					// as well as fro p
-	double distance = 0.0;							// the distance is gradually builh here
-	for( int i = 0; i < dimension() ; i++){
-		double diff = ( Array1[i].getDouble() - Array2[i].getDouble() );
-		distance += diff * diff;	// euclidean norm
+double EuclideanPointSparse::distance(Point* p){
+	Quantity* P_Array = p->value();
+	int pLength = p->dimension();
+
+	SparsePoint* sp = (SparsePoint*)p;
+	int* pIndexes = sp->indexes();
+
+	double dist = 0.0;
+	double diff = 0.0;
+	int i = 0, j = 0;
+	for( ; i < Length && j < pLength; ){
+		if( Indexes[i] == pIndexes[j] ){
+			diff = SparseArray[i].getDouble() - P_Array[j].getDouble();
+			i++;
+			j++;
+		}
+		else if( Indexes[i] < pIndexes[j] ){
+			diff = SparseArray[i].getDouble();
+			i++;
+		}
+		else{
+			diff = P_Array[j].getDouble();
+			j++;
+		}
+		dist += diff * diff;
 	}
 
-	return distance;
+	if( i < Length ){
+		for( ; i < Length; i++ ){
+			diff = SparseArray[i].getDouble();
+			dist += diff * diff;
+		}
+	}
+	else if( j < pLength){
+		for( ; j < pLength; j++ ){
+			diff = P_Array[j].getDouble();
+			dist += diff * diff;
+		}
+	}
+
+	return dist;
 }
 
 // @override
-double EuclideanPoint::similarity(Point* p){
-	return 1.0 / ( distance(p) + 1.0  );			// compute the distance (in [0,2] )
+double EuclideanPointSparse::similarity(Point* p){
+	return 1.0 / ( distance(p) + 1.0  );
 }
 
 // @override
-PointType EuclideanPoint::type(void){
+PointType EuclideanPointSparse::type(void){
 	return EUCLIDEAN;
 }
 
@@ -37,7 +95,7 @@ PointType EuclideanPoint::type(void){
 Euclidean_h::Euclidean_h(int dimension, int wRand ){
 	w = wRand;													// the "W" parameter, as defined by the user
 	t = Math::dRand(0,w);										// the "t" parameter, randomply picked in [0,w)
-	p1 = new EuclideanPoint( dimension );						// create a Gaussian random point-vector
+	p1 = new EuclideanPointSparse( dimension );						// create a Gaussian random point-vector
 }
 
 uint64_t Euclidean_h::hash(Point* p ){

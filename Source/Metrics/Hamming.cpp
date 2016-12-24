@@ -19,6 +19,17 @@ HammingPoint::HammingPoint(std::string name, Bitset* bits){
 	Value = bits;
 }
 
+HammingPoint::HammingPoint(std::string name, List<Pair>* ratingList, int dimension){
+	Point::Name = name;
+	Value = new Bitset(dimension);
+
+	for (Node<Pair>* node = ratingList->start() ; node != NULL; node = node->next() ) {
+		if( node->data()->Rating >= 3 ){
+			Value->set( node->data()->Item );
+		}
+	}
+}
+
 // @override
 std::string HammingPoint::name(void) {			// the human-readable representation of the point
 	return Point::Name;
@@ -26,7 +37,7 @@ std::string HammingPoint::name(void) {			// the human-readable representation of
 
 // @override
 int HammingPoint::dimension(void) {				// the dimensionality of the point
-	return Value->size();						// the number of bits a hamming point has
+	return Value->dimension();						// the number of bits a hamming point has
 }
 
 // @override

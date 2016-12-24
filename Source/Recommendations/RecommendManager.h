@@ -10,46 +10,39 @@
 
 typedef int (*rGenerator)(int N);
 
-struct Pair{
-	int Item;
-	int Rating;
-
-	Pair(int item, int rating){
-		Item = item;
-		Rating = rating;
-	}
-};
-
 class RecommendManager{													// abstract class used to communicate with the user
 	protected:
-		Point** PointTable;					// the table of points to be clustered
+		Point** PointTable[3];			// the table of points to be clustered
 		int 	NumUsers;					// thr number of points
 		int 	NumItems;
-		bool Complete;						// whether to print all the clusters or just the centers
 
 		List<List<Pair> > Ratings;
-		HashTable<PointIndex, Point*>* PointMap;
+		HashTable<PointIndex, Point*>* PointMap[3];
 		double* MeanRatings;
-		double** ResultRatings;
+		double** ResultRatings[3];
 		bool** RealRatings;
+		double MAE[3];
+		std::string Messages[3];
+		bool Validate;
 
 		void getPath		(std::string& path, std::string message);// promts "message" to the user, then takes "path" from stdin
 		void openFileWrite	(std::string& path, std::ofstream& file);// open a file in order to write to it
 		void finalise		(void);
 
 		void getFileInfo	(std::string dataPath);
-		Point* 	getNextPoint(std::ifstream& queryFile);// get the next point from a file
-		void 	estimateRating	(int user, List<Point, Point*>* Neighbors);
-		void 	evaluate		(std::ofstream& outfFile, std::string Message);
+		Point** 	getNextPoint(std::ifstream& queryFile);// get the next point from a file
+		void 	estimateRating	(int metric, int user, List<Point, Point*>* Neighbors);
+		void 	evaluate		(int metric, std::ofstream& outfFile, std::string Message);
+		void 	validate 		(std::ofstream& outfFile);
 
 
 		// the above methods vary between the different Points
-		virtual void fillTable			(std::string dataPath);					// fills "PointTable" form a file
-		virtual void 	openFileRead 	(std::string& path, std::ifstream& file);// open a file in order to read it
-		virtual void 	runTests		(std::ofstream& outfFile)=0;
+		virtual void fillTable		(std::string dataPath);					// fills "PointTable" form a file
+		virtual void openFileRead 	(std::string& path, std::ifstream& file);// open a file in order to read it
+		virtual void runTests		(int metric, std::ofstream& outfFile)=0;
 
 	public:
-		RecommendManager(bool complete);
+		RecommendManager(bool validate);
 
 		void run(std::string& dataPath, std::string& outPath);		// initiate the procedure of "train & test"
 		void runCUTests(void);
@@ -60,21 +53,22 @@ class RecommendManager{													// abstract class used to communicate with t
 
 class NNRecommendManager: public RecommendManager{
 	private:
-		LocalHashTable<Point, Point*>* LSH;							// the Locality Sensitive Hash Table
+		LocalHashTable<Point, Point*>* LSH[3];							// the Locality Sensitive Hash Table
+		hash_function** hashFunctions[3];
 		int L_hash;													// the number of Hash Tables the above table uses
 		int K_hash;													// the number of "h" hash functions we use
-		hash_function** hashFunctions;
 		int barrier;
 		int P;
 
-		double  getRadius		(void);
+		double  getRadius		(int metric);
 		void 	fillTable		(std::string dataPath);
-		void 	runTests		(std::ofstream& outfFile);
+		void 	runTests		(int metric, std::ofstream& outfFile);
+		void 	validate 		(std::ofstream& outfFile);
 
-		List<Point, Point*>* 	findNeighbours	(Point* point);
+		List<Point, Point*>* 	findNeighbours	(int metric, Point* point);
 
 	public:
-		NNRecommendManager(bool complete);
+		NNRecommendManager(bool validate);
 		~NNRecommendManager();
 };
 
@@ -84,18 +78,19 @@ class NNRecommendManager: public RecommendManager{
 class ClusterRecommendManager: public RecommendManager{
 	private:
 
-		int K_clusters;						// the number of clusters
-		TriangularMatrix* d;				// the table of precomputed distances
-		ClusterAlgorithm* Algorithm;		// the algorithms to run
+		TriangularMatrix* d[3];				// the table of precomputed distances
+		int K_clusters[3];						// the number of clusters
+		ClusterAlgorithm* Algorithm[3];		// the algorithms to run
 
 		void 	fillTable		(std::string dataPath);
-		void 	runTests		(std::ofstream& outfFile);
+		void 	runTests		(int metric, std::ofstream& outfFile);
 
-		List<Point, Point*>* 	findNeighbours	(List<AssignPair>* cluster);
+		void 	findAlgorithm	(int metric);
 
+		List<Point, Point*>* 	findNeighbours	(int metric, List<AssignPair>* cluster);
 
 	public:
-		ClusterRecommendManager(bool complete);
+		ClusterRecommendManager(bool validate);
 		~ClusterRecommendManager();
 };
 

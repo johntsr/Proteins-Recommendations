@@ -28,7 +28,7 @@ SOURCE			= $(SOURCE_CLUSTER) $(SOURCE_METRICS) $(SOURCE_GENERAL)
 HEADER			= $(HEADER_CLUSTER) $(HEADER_METRICS) $(HEADER_GENERAL) $(HEADER_DATA)
 
 DIR_BUILD = ./Build/
-OBJS 		= $(DIR_BUILD)Main.o $(DIR_BUILD)Hamming.o $(DIR_BUILD)Euclidean.o $(DIR_BUILD)Vector.o $(DIR_BUILD)CosineSimilarity.o $(DIR_BUILD)HashFunction.o $(DIR_BUILD)Clusters.o $(DIR_BUILD)RecommendManager.o $(DIR_BUILD)MetricSpace.o $(DIR_BUILD)Quantity.o $(DIR_BUILD)Initializer.o $(DIR_BUILD)ClusterStructures.o $(DIR_BUILD)Assigner.o $(DIR_BUILD)Updater.o
+OBJS 		= $(DIR_BUILD)Main.o $(DIR_BUILD)Hamming.o $(DIR_BUILD)Euclidean.o $(DIR_BUILD)Vector.o $(DIR_BUILD)Sparse.o $(DIR_BUILD)CosineSimilarity.o $(DIR_BUILD)HashFunction.o $(DIR_BUILD)Clusters.o $(DIR_BUILD)FoldValidation.o $(DIR_BUILD)RecommendManager.o $(DIR_BUILD)MetricSpace.o $(DIR_BUILD)Quantity.o $(DIR_BUILD)Initializer.o $(DIR_BUILD)ClusterStructures.o $(DIR_BUILD)Assigner.o $(DIR_BUILD)Updater.o
 
 
 # -g option enables debugging mode
@@ -43,6 +43,10 @@ $(OUT): $(OBJS) $(SOURCE) $(HEADER)
 
 $(DIR_BUILD)RecommendManager.o: $(DIR_RECOMMEND)RecommendManager.cpp $(HEADER)
 	$(CC) $(FLAGS) $(DIR_RECOMMEND)RecommendManager.cpp -o $(DIR_BUILD)RecommendManager.o
+
+$(DIR_BUILD)FoldValidation.o: $(DIR_RECOMMEND)FoldValidation.cpp $(HEADER)
+	$(CC) $(FLAGS) $(DIR_RECOMMEND)FoldValidation.cpp -o $(DIR_BUILD)FoldValidation.o
+
 
 $(DIR_BUILD)Clusters.o: $(DIR_CLUSTER)Clusters.cpp $(HEADER)
 	$(CC) $(FLAGS) $(DIR_CLUSTER)Clusters.cpp -o $(DIR_BUILD)Clusters.o
@@ -62,6 +66,10 @@ $(DIR_BUILD)Updater.o: $(DIR_CLUSTER)Updater.cpp $(HEADER)
 
 $(DIR_BUILD)Vector.o: $(DIR_GENERAL)Vector.cpp $(DIR_GENERAL)Vector.h $(DIR_GENERAL)Math.h $(HEADER_DATA)
 	$(CC) $(FLAGS) $(DIR_GENERAL)Vector.cpp -o $(DIR_BUILD)Vector.o
+
+$(DIR_BUILD)Sparse.o: $(DIR_GENERAL)Sparse.cpp $(DIR_GENERAL)Sparse.h $(DIR_GENERAL)Math.h $(HEADER_DATA)
+	$(CC) $(FLAGS) $(DIR_GENERAL)Sparse.cpp -o $(DIR_BUILD)Sparse.o
+
 
 $(DIR_BUILD)HashFunction.o: $(DIR_GENERAL)HashFunction.cpp $(DIR_GENERAL)HashFunction.h $(DIR_GENERAL)Point.h $(DIR_GENERAL)Math.h $(HEADER_DATA)
 	$(CC) $(FLAGS) $(DIR_GENERAL)HashFunction.cpp -o $(DIR_BUILD)HashFunction.o
@@ -88,6 +96,9 @@ $(DIR_BUILD)Main.o: $(SOURCE) $(HEADER) mkdir
 mkdir:
 	mkdir -p $(DIR_BUILD)
 
+runXS:
+	./$(OUT) -d ../../DataSets/yahoo_music_xs.dat -o results_xs.dat
+
 runSmall:
 	./$(OUT) -d ../../DataSets/yahoo_music_small.dat -o results_small.dat
 
@@ -95,10 +106,10 @@ runMedium:
 	./$(OUT) -d ../../DataSets/yahoo_music_big.dat -o results_big.dat
 
 debug:
-	gdb --args ./$(OUT) -d ../../DataSets/yahoo_music_small.dat -o results_small.dat
+	gdb --args ./$(OUT) -d ../../DataSets/yahoo_music_xs.dat -o results_small.dat
 
 valgrind:
-	valgrind --leak-check=full --show-leak-kinds=all ./$(OUT) -d ../../DataSets/yahoo_music_small.dat -o results_small.dat > log.txt 2>&1
+	valgrind --leak-check=full --show-leak-kinds=all ./$(OUT) -d ../../DataSets/yahoo_music_xs.dat -o results_small.dat > log.txt 2>&1
 
 
 # clean house

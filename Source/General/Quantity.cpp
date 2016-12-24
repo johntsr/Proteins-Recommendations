@@ -10,21 +10,32 @@ using namespace std;
 ******************************************************************/
 
 Bitset::Bitset(string bitString){
-	Size = bitString.length();
-	Array = new bool[Size];
-	Count = 0;
+	Dimension = bitString.length();
+	Size = Dimension / 64;
+	if( Dimension % 64 > 0 ){
+		Size++;
+	}
 
-	for(int i = 0; i < Size; i++){
-		Array[i] = (bool)(bitString[i] - '0');
-		if( Array[i] ){
-			Count++;
+	Array = new bitset<64>[Size];
+
+	Count = 0;
+	for(int b = 0, strIndex = 0; b < Size; b++){
+		for(int i = 0; i < 64 && strIndex < Dimension; i++, strIndex++ ){
+			Array[b][i] = (bool)(bitString[strIndex] - '0');
+			if( Array[b][i] ){
+				Count++;
+			}
 		}
 	}
 }
 
 Bitset::Bitset(int size, int count){
-	Size = size;
-	Array = new bool[Size];
+	Dimension = size;
+	Size = Dimension / 64;
+	if( Dimension % 64 > 0 ){
+		Size++;
+	}
+	Array = new bitset<64>[Size];
 	Count = 0;
 	setFirst(count);
 }
@@ -33,28 +44,29 @@ Bitset::~Bitset(){
 	delete[] Array;
 }
 
-int Bitset::size(void){
-	return Size;
+int Bitset::dimension(void){
+	return Dimension;
 }
 
-Bitset* Bitset::operator & (Bitset& b){
-	Bitset* ResultBits = new Bitset(Size);
-	for(int i = 0; i < Size; i++){
-		if( Array[i] & b.Array[i] ){
-			ResultBits->set(i);
-		}
+Bitset* Bitset::operator & (Bitset& bset){
+	Bitset* ResultBits = new Bitset(Dimension);
+	int count = 0;
+	for(int b = 0; b < Size; b++){
+		ResultBits->Array[b] = Array[b] & bset.Array[b];
+		count += ResultBits->Array[b].count();
 	}
+	ResultBits->Count = count;
 	return ResultBits;
 }
 
-Bitset* Bitset::operator ^ (Bitset& b){
-	Bitset* ResultBits = new Bitset(Size);
-	for(int i = 0; i < Size; i++){
-		if( Array[i] ^ b.Array[i] ){
-			ResultBits->set(i);
-		}
-
+Bitset* Bitset::operator ^ (Bitset& bset){
+	Bitset* ResultBits = new Bitset(Dimension);
+	int count = 0;
+	for(int b = 0; b < Size; b++){
+		ResultBits->Array[b] = Array[b] ^ bset.Array[b];
+		count += ResultBits->Array[b].count();
 	}
+	ResultBits->Count = count;
 	return ResultBits;
 }
 
@@ -63,32 +75,43 @@ unsigned int Bitset::count(void){
 }
 
 void Bitset::setFirst(int count){
-	for(int i = 0; i < Size; i++){
-		if( i < count ){
-			Array[i] = true;
-			Count++;
-		}
-		else{
-			Array[i] = false;
-		}
+	int allSet = count / 64;
+	int remain = count % 64;
+
+	for(int b = 0; b < allSet; b++){
+		Array[b].set();
 	}
+
+	int b = allSet;
+	for(int i = 0, strIndex = 0 ; i < 64 && strIndex < remain; i++, strIndex++ ){
+		Array[b][i] = true;
+	}
+
+	Count = count;
 }
 
 void Bitset::set(int position){
-	if( !Array[position] ){
+	int b = position / 64;
+	int i = position % 64;
+	if( !Array[b][i] ){
 		Count++;
 	}
-	Array[position] = true;
+
+	Array[b][i] = true;
 }
 
 string Bitset::getString(void){
 	string result;
-	for(int i = 0; i < Size; i++){
-		if( Array[i] ){
-			result += "1";
-		}
-		else{
-			result += "0";
+
+	for(int b = 0, strIndex = 0; b < Size; b++){
+		for(int i = 0; i < 64; i++, strIndex++ ){
+			if( Array[b][i] ){
+				result += "1";
+			}
+			else{
+				result += "0";
+			}
+
 		}
 	}
 	return result;

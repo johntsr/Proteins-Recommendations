@@ -111,12 +111,12 @@ int main(int argc, char *argv[]) {
 
 	string dataPath, outPath;
 	fstream dataFile;
-	bool complete = false;
 	bool CUTest = false;
 
 	parseArguments(argc, argv, dataPath, outPath, CUTest );
 
-	RecommendManager* manager =  new NNRecommendManager(complete);
+	RecommendManager* manager =  new NNRecommendManager(true);
+	// RecommendManager* manager =  new ClusterRecommendManager(true);
 
 	getPath( dataPath, "Please, enter the path for the data set file" );
 	openFile(dataPath, dataFile);

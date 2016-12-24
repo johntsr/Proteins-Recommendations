@@ -3,18 +3,38 @@
 
 #include "../General/HashFunction.h"
 #include "../General/Vector.h"
+#include "../General/Sparse.h"
+
+// // EuclideanPoint : just a VectorPoint with a unique definition of distance
+// class EuclideanPoint: public VectorPoint {
+// 	public:
+//
+// 		EuclideanPoint(std::string Name, std::string& stringLine, int length):
+// 			VectorPoint(Name, stringLine, length){}
+//
+// 		EuclideanPoint(std::string Name, double* coordinates, int length):
+// 			VectorPoint(Name, coordinates, length){}
+//
+// 		EuclideanPoint(int dimension): VectorPoint(dimension){}
+//
+// 		double 	distance	(Point* p);				// @override
+// 		double 	similarity	(Point* p);				// @override
+// 		PointType	type		(void);				// @override
+//
+// 		virtual double multiplyDouble(double R, double times){
+// 			return R * times * times;
+// 		}
+// };
 
 // EuclideanPoint : just a VectorPoint with a unique definition of distance
-class EuclideanPoint: public VectorPoint {
+class EuclideanPointSparse: public SparsePoint {
 	public:
 
-		EuclideanPoint(std::string Name, std::string& stringLine, int length):
-			VectorPoint(Name, stringLine, length){}
+		EuclideanPointSparse(std::string Name, List<Pair>* ratingList):
+				SparsePoint(Name, ratingList){}
 
-		EuclideanPoint(std::string Name, double* coordinates, int length):
-			VectorPoint(Name, coordinates, length){}
-
-		EuclideanPoint(int dimension): VectorPoint(dimension){}
+		EuclideanPointSparse(int dimension):
+				SparsePoint(dimension){}
 
 		double 	distance	(Point* p);				// @override
 		double 	similarity	(Point* p);				// @override

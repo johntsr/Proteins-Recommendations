@@ -4,18 +4,35 @@
 
 #include "../General/HashFunction.h"
 #include "../General/Vector.h"
+#include "../General/Sparse.h"
+
+// // CosinePoint : just a VectorPoint with a unique definition of distance
+// class CosinePoint: public VectorPoint {
+// 	public:
+//
+// 		CosinePoint(std::string Name, std::string& stringLine, int length):
+// 				VectorPoint(Name, stringLine, length){}
+//
+// 		CosinePoint(std::string Name, double* coordinates, int length):
+// 				VectorPoint(Name, coordinates, length){}
+//
+// 		CosinePoint(int dimension): VectorPoint(dimension){}
+//
+// 		double 	distance	(Point* p);				// @override
+// 		double 	similarity	(Point* p);				// @override
+// 		PointType	type		(void);					// @override
+// };
 
 // CosinePoint : just a VectorPoint with a unique definition of distance
-class CosinePoint: public VectorPoint {
+class CosinePointSparse: public SparsePoint {
 	public:
 
-		CosinePoint(std::string Name, std::string& stringLine, int length):
-				VectorPoint(Name, stringLine, length){}
+		CosinePointSparse(std::string Name, List<Pair>* ratingList):
+				SparsePoint(Name, ratingList){}
 
-		CosinePoint(std::string Name, double* coordinates, int length):
-				VectorPoint(Name, coordinates, length){}
+		CosinePointSparse(int dimension):
+				SparsePoint(dimension){}
 
-		CosinePoint(int dimension): VectorPoint(dimension){}
 
 		double 	distance	(Point* p);				// @override
 		double 	similarity	(Point* p);				// @override
