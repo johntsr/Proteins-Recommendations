@@ -21,6 +21,7 @@ class RecommendManager{													// abstract class used to communicate with t
 		double* MeanRatings;
 		double** ResultRatings[3];
 		bool** RealRatings;
+		bool* DataPoint;
 		double MAE[3];
 		std::string Messages[3];
 		bool Validate;
@@ -65,7 +66,7 @@ class NNRecommendManager: public RecommendManager{
 		void 	runTests		(int metric, std::ofstream& outfFile);
 		void 	validate 		(std::ofstream& outfFile);
 
-		List<Point, Point*>* 	findNeighbours	(int metric, Point* point);
+		List<Point, Point*>* 	findNeighbours	(int metric, int i);
 
 	public:
 		NNRecommendManager(bool validate);

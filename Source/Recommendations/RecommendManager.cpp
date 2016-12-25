@@ -14,6 +14,13 @@
 
 using namespace std;
 
+double abs(double x){
+	if( x < 0.0 ){
+		return -x;
+	}
+	return x;
+}
+
 /*****************************************************************
 ***************** RecommendManager class methods *************************
 ******************************************************************/
@@ -120,31 +127,31 @@ void RecommendManager::getFileInfo(std::string dataPath){
 
 	RealRatings = new bool*[NumUsers];
 	MeanRatings = new double[NumUsers];
+	DataPoint = new bool[NumUsers];
 	for(int i = 0; i < NumUsers; i++){
+		DataPoint[i] = false;
 		ResultRatings[COS_INDEX][i] = new double[NumItems];
 		ResultRatings[EUCL_INDEX][i] = new double[NumItems];
 		ResultRatings[HAM_INDEX][i] = new double[NumItems];
 		RealRatings[i] = new bool[NumItems];
 	}
 
-
-	// for (Node<List<Pair> >* list = Ratings.start() ; list != NULL; list = list->next() ) {
-	// 	std::cout << "A user is:" << std::endl << std::endl;
-	// 	for (Node<Pair>* node = list->data()->start() ; node != NULL; node = node->next() ) {
-	// 		std::cout << node->data()->Item << " - " << node->data()->Rating << std::endl;
-	// 	}
-	// }
-	// std::cout << "NumUsers = " << NumUsers << std::endl;
-	// std::cout << "NumItems = " << NumItems << std::endl;
-	// exit(0);
-
 }
 
 void RecommendManager::estimateRating(int metric, int user, List<Point, Point*>* Neighbors){
+
+	if( DataPoint[user] ){
+		return;
+	}
+
 	int neighborNum = Neighbors->count();
 
 	if( neighborNum == 0 ){
 		for(int item = 0; item < NumItems; item++){
+			if( RealRatings[user][item] ){
+				continue;
+			}
+
 			ResultRatings[metric][user][item] = MeanRatings[user];
 		}
 		return;
@@ -169,7 +176,7 @@ void RecommendManager::estimateRating(int metric, int user, List<Point, Point*>*
 		double sumRatings = 0.0, sumWeights = 0.0;
 		for (index = 0 ; index < neighborNum; index++ ) {
 
-			if( neighborIndexes[index] == user || ResultRatings[metric][user][item] == DBL_MAX ){
+			if( neighborIndexes[index] == user || ResultRatings[metric][neighborIndexes[index]][item] == DBL_MAX ){
 				continue;
 			}
 
@@ -212,10 +219,10 @@ void RecommendManager::run(std::string& dataPath, std::string& outPath){
 	ofstream outFile;
 	openFileWrite(outPath, outFile);									// open the above file
 
-	for(int metric = 0; metric < 3; metric++){
-		runTests(metric, outFile);
-		evaluate(metric, outFile, Messages[metric]);
-	}
+	// for(int metric = 0; metric < 3; metric++){
+	// 	runTests(metric, outFile);
+	// 	evaluate(metric, outFile, Messages[metric]);
+	// }
 
 	if( Validate ){
 		validate(outFile);
@@ -296,44 +303,34 @@ void RecommendManager::validate(std::ofstream& outFile){
 	}
 	Partitions[F-1] = new Partition(positions.count(), positions);
 
-	bool** RealRatingsCopy = new bool*[NumUsers];
-	for(int i = 0; i < NumUsers; i++){
-		RealRatingsCopy[i] = new bool[NumItems];
-		for(int j = 0; j < NumItems; j++){
-			RealRatingsCopy[i][j] = RealRatings[i][j];
-		}
-	}
-
 	for(int metric = 0; metric < 3; metric++){
 		MAE[metric] = 0.0;
 	}
 
 	for(int f = 0; f < F; f++){ // for every validation fold
 
-		double** ResultRatingsCopy[3];
 		// store initial results
+		double** ResultRatingsCopy[3];
 		for(int metric = 0; metric < 3; metric++){
 			ResultRatingsCopy[metric] = new double*[Partitions[f]->size()];
-			for(int user = 0; user < Partitions[f]->size(); user++){
-				ResultRatingsCopy[metric][user] = new double[NumItems];
+			for(Index user(Partitions[f]); user < Partitions[f]->size(); user++){
+				ResultRatingsCopy[metric][user.index()] = new double[NumItems];
 				for(int item = 0; item < NumItems; item++){
-					ResultRatingsCopy[metric][user][item] = ResultRatings[metric][user][item];
+					ResultRatingsCopy[metric][user.index()][item] = ResultRatings[metric][*user][item];
 				}
 			}
 		}
 
 		Partition DataSet(Partitions, F, f);
 		// skip them in predictions
-		for(int user = 0; user < DataSet.size(); user++){
-			for(int item = 0; item < NumItems; item++){
-				RealRatings[user][item] = true;
-			}
+		for(Index user(&DataSet); user < DataSet.size(); user++){
+			DataPoint[*user] = true;
 		}
 
 		// predict only the already rated
-		for(int user = 0; user < Partitions[f]->size(); user++){
+		for(Index user(Partitions[f]); user < Partitions[f]->size(); user++){
 			for(int item = 0; item < NumItems; item++){
-				RealRatings[user][item] = !RealRatings[user][item];
+				RealRatings[*user][item] = !RealRatings[*user][item];
 			}
 		}
 
@@ -344,27 +341,30 @@ void RecommendManager::validate(std::ofstream& outFile){
 		double fMAE[3] = {0.0, 0.0, 0.0};
 		for(int metric = 0; metric < 3; metric++){
 			runTests(metric, outFile);
-			for(int user = 0; user < Partitions[f]->size(); user++){
+			for(Index user(Partitions[f]); user < Partitions[f]->size(); user++){
 				for(int item = 0; item < NumItems; item++){
-					if( RealRatingsCopy[user][item] ){
-						fMAE[metric] += abs( ResultRatingsCopy[metric][user][item] - ResultRatings[metric][user][item] );
+					if( !RealRatings[*user][item] ){	// NOTE: NOT!
+						fMAE[metric] += abs( ResultRatingsCopy[metric][user.index()][item] - ResultRatings[metric][*user][item] );
 					}
-					ResultRatings[metric][user][item] = ResultRatingsCopy[metric][user][item];
+					ResultRatings[metric][*user][item] = ResultRatingsCopy[metric][user.index()][item];
 				}
-				delete[] ResultRatingsCopy[metric][user];
+				delete[] ResultRatingsCopy[metric][user.index()];
 			}
 			delete[] ResultRatingsCopy[metric];
 			fMAE[metric] /= Partitions[f]->size();
 			MAE[metric] += fMAE[metric];
 		}
 
-		// reset RealRatings
-		for(int i = 0; i < NumUsers; i++){
-			for(int j = 0; j < NumItems; j++){
-				RealRatings[i][j] = RealRatingsCopy[i][j];
-			}
+		for(Index user(&DataSet); user < DataSet.size(); user++){
+			DataPoint[*user] = false;
 		}
 
+		// reset RealRatings
+		for(Index user(Partitions[f]); user < Partitions[f]->size(); user++){
+			for(int item = 0; item < NumItems; item++){
+				RealRatings[*user][item] = !RealRatings[*user][item];
+			}
+		}
 	}
 
 	for(int metric = 0; metric < 3; metric++){
@@ -373,17 +373,10 @@ void RecommendManager::validate(std::ofstream& outFile){
 	}
 
 
-	for(int i = 0; i < NumUsers; i++){
-		delete[] RealRatingsCopy[i];
-	}
-	delete[] RealRatingsCopy;
-
-
 	for(int f = 0; f < F; f++){
 		delete Partitions[f];
 	}
 }
-
 
 void RecommendManager::finalise(void){
 	if( PointTable[0] != NULL ){
@@ -423,6 +416,7 @@ void RecommendManager::finalise(void){
 
 		delete[] RealRatings;
 		delete[] MeanRatings;
+		delete[] DataPoint;
 
 		delete PointMap[COS_INDEX];
 		delete PointMap[EUCL_INDEX];
@@ -501,22 +495,22 @@ double NNRecommendManager::getRadius(int metric){
 
 void NNRecommendManager::runTests(int metric, std::ofstream& outFile){
 	for(int i = 0; i < NumUsers; i++){
-		std::cout << "Examine Neighbors of user " << i << std::endl;
 		List<Point, Point*>* Neighbors;
-		Neighbors = findNeighbours(metric, PointTable[metric][i]);
+		Neighbors = findNeighbours(metric, i);
 		estimateRating(metric, i, Neighbors);
 		delete Neighbors;
 	}
 }
 
-double abs(double x){
-	if( x < 0.0 ){
-		return -x;
+List<Point, Point*>* NNRecommendManager::findNeighbours(int metric, int user){
+	if( DataPoint[user] ){
+		return new List<Point, Point*>();
 	}
-	return x;
-}
 
-List<Point, Point*>* NNRecommendManager::findNeighbours(int metric, Point* point){
+	std::cout << "Examine Neighbors of user " << user << std::endl;
+
+
+	Point* point = PointTable[metric][user];
 
 	// TODO
 	if( metric == HAM_INDEX ){
@@ -664,6 +658,10 @@ ClusterRecommendManager::ClusterRecommendManager(bool validate)
 
 void ClusterRecommendManager::fillTable(std::string dataPath){
 	RecommendManager::fillTable(dataPath);
+
+	for(int metric = 0; metric < 3; metric++){
+		findAlgorithm(metric);
+	}
 }
 
 void ClusterRecommendManager::findAlgorithm(int metric){
@@ -694,18 +692,15 @@ void ClusterRecommendManager::findAlgorithm(int metric){
 }
 
 void ClusterRecommendManager::runTests(int metric, std::ofstream& outFile){
-	findAlgorithm(metric);
 	for(int k = 0; k < K_clusters[metric]; k++){
 		List<AssignPair>* cluster = Algorithm[metric]->getCluster(k);
-		List<Point, Point*>* Neighbors = findNeighbours(metric,cluster);
+		List<Point, Point*>* Neighbors = findNeighbours(metric, cluster);
 		for (Node<AssignPair>* node = cluster->start() ; node != NULL; node = node->next() ) {
 			estimateRating(metric, node->data()->assigned(), Neighbors);
 		}
 		delete Neighbors;
 	}
-	delete Algorithm[metric];
 }
-
 
 List<Point, Point*>* ClusterRecommendManager::findNeighbours(int metric, List<AssignPair>* cluster){
 	List<Point, Point*>* Neighbors = new List<Point, Point*>();
@@ -720,4 +715,8 @@ ClusterRecommendManager::~ClusterRecommendManager(){
 	delete d[COS_INDEX];
 	delete d[EUCL_INDEX];
 	delete d[HAM_INDEX];
+
+	delete Algorithm[COS_INDEX];
+	delete Algorithm[EUCL_INDEX];
+	delete Algorithm[HAM_INDEX];
 }

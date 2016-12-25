@@ -32,5 +32,32 @@ class Partition{
 		~Partition();
 };
 
+class Index{
+	private:
+		Partition* Part;
+		int _Index;
+	public:
+		Index(Partition* part, int i = 0){
+			_Index = i;
+			Part = part;
+		}
+
+		int index(void){
+			return _Index;
+		}
+
+		bool operator < (int size){
+			return _Index < size;
+		}
+
+		void operator ++ (int){
+			_Index++;
+		}
+
+		int operator * (void){
+			return (*Part)[_Index];
+		}
+};
+
 
 #endif
