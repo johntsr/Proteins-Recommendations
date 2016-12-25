@@ -195,19 +195,9 @@ void RecommendManager::estimateRating(int metric, int user, List<Point, Point*>*
 			ResultRatings[metric][user][item] = MeanRatings[user];
 		}
 		else{
-			// if( user == 0 ){
-			//
-			// 	std::cout << "item = " << item << " " << "sumRatings = " << sumRatings
-			// 	<< " " <<  "sumWeights = " << sumWeights << " "
-			// 	<< (sumRatings * 1000) / (sumWeights * 1000) << '\n';
-			// }
 			ResultRatings[metric][user][item] = MeanRatings[user] + (sumRatings / sumWeights);
 		}
 	}
-	//
-	// if( user == 0 ){
-	// 	exit(0);
-	// }
 
 	delete[] neighborIndexes;
 	delete[] neighborSim;
@@ -219,10 +209,10 @@ void RecommendManager::run(std::string& dataPath, std::string& outPath){
 	ofstream outFile;
 	openFileWrite(outPath, outFile);									// open the above file
 
-	// for(int metric = 0; metric < 3; metric++){
-	// 	runTests(metric, outFile);
-	// 	evaluate(metric, outFile, Messages[metric]);
-	// }
+	for(int metric = 0; metric < 3; metric++){
+		runTests(metric, outFile);
+		evaluate(metric, outFile, Messages[metric]);
+	}
 
 	if( Validate ){
 		validate(outFile);
@@ -391,20 +381,7 @@ void RecommendManager::finalise(void){
 
 		PointTable[0] = NULL;
 
-		// std::cout << "NumUsers = " << NumUsers << std::endl;
-		// std::cout << "NumItems = " << NumItems << std::endl;
-
 		for(int i = 0; i < NumUsers; i++){
-
-			// std::cout << "i = " << i << std::endl<< std::endl<< std::endl<< std::endl;
-			//
-			// for(int j = 0; j < NumItems; j++){
-			// 	std::cout << "rating = " << ResultRatings[i][j]
-			// 	 			<< " - real = " << RealRatings[i][j] << std::endl;
-			// }
-			//
-			// std::cout << "go to the next!" << std::endl;
-
 			delete[] ResultRatings[COS_INDEX][i];
 			delete[] ResultRatings[EUCL_INDEX][i];
 			delete[] ResultRatings[HAM_INDEX][i];
@@ -536,33 +513,26 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(int metric, int user){
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
 
-	if( metric == HAM_INDEX ){
+	if( metric == HAM_INDEX ){	// TODO
 		std::cout << "time of inRange() = " << time_spent << " secs." << std::endl;
 		std::cout << "RSmall = " << RSmall << std::endl;
 		std::cout << "count = " << ResultPointsSmall->count() << std::endl;
 		exit(0);
 	}
-
-	// std::cout << "initially, RSmall = " << RSmall->getDouble() << " -> " << ResultPointsSmall->count() << std::endl;
-
-	// if( ResultPointsSmall->count() == P ){
+	
+	
 	if( abs(ResultPointsSmall->count() - P) < Tolerance ){
 		delete ResultPointsBig;
 		return ResultPointsSmall;
 	}
 	else if( ResultPointsSmall->count() < P ){
-
-		// std::cout << "try to find RBig" << std::endl;
-
 		do{
 			ResultPointsBig->flush();
 			RBig = PointTable[metric][0]->multiplyDouble(RBig, 2.0);
 			LSH[metric]->inRange( point, RBig, *ResultPointsBig );
 			times++;
-			// std::cout << "RBig = " << RBig->getDouble() << " -> " << ResultPointsBig->count() << std::endl;
 		} while( ResultPointsBig->count() < P && times < BarrierTimes );
 
-		// if( ResultPointsBig->count() == P || times == BarrierTimes ){
 		if( abs(ResultPointsBig->count() - P) < Tolerance || times == BarrierTimes ){
 			delete ResultPointsSmall;
 			return ResultPointsBig;
@@ -571,20 +541,14 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(int metric, int user){
 		RSmall = PointTable[metric][0]->multiplyDouble(RBig, 0.5);
 	}
 	else{
-
-		// std::cout << "try to find RSmall" << std::endl;
-
-
 		do{
 			ResultPointsSmall->flush();
 			RSmall = PointTable[metric][0]->multiplyDouble(RSmall, 0.5);
 
 			LSH[metric]->inRange( point, RSmall, *ResultPointsSmall );
 			times++;
-			// std::cout << "RSmall = " << RSmall->getDouble() << " -> " << ResultPointsSmall->count() << std::endl;
 		} while( ResultPointsSmall->count() > P && times < BarrierTimes );
 
-		// if( ResultPointsSmall->count() == P || times == BarrierTimes ){
 		if(  abs(ResultPointsSmall->count() - P) < Tolerance || times == BarrierTimes ){
 			delete ResultPointsBig;
 			return ResultPointsSmall;
@@ -594,21 +558,11 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(int metric, int user){
 
 	}
 
-	// std::cout  << std::endl << std::endl;
-
 	do {
 		double RMean = (RSmall + RBig) / 2.0;
 		List<Point, Point*> *ResultPointsMean = new List<Point, Point*>();
 		LSH[metric]->inRange( point, RMean, *ResultPointsMean );
 
-		// std::cout << std::endl<< std::endl;
-
-		// std::cout << "NOW, RSmall = " << RSmall->getDouble() << " -> " << ResultPointsSmall->count() << std::endl;
-		// std::cout << "NOW, RBig = " << RBig->getDouble() << " -> " << ResultPointsBig->count() << std::endl;
-		// std::cout << "NOW, RMean = " << RMean->getDouble() << " -> " << ResultPointsMean->count() << std::endl;
-
-
-		// if( ResultPointsMean->count() == P || times == BarrierTimes ){
 		if( abs(ResultPointsMean->count() - P) < Tolerance || times == BarrierTimes ){
 			delete ResultPointsBig;
 			delete ResultPointsSmall;
