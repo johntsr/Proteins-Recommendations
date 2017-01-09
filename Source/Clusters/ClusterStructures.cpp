@@ -44,8 +44,58 @@ void TriangularMatrix::print(void){
 }
 
 TriangularMatrix::~TriangularMatrix(){
-	for(int i = 0; i < N; i++){
-		delete[] d[i];
+	if( d != NULL ){
+		for(int i = 0; i < N; i++){
+			delete[] d[i];
+		}
+		delete[] d;
 	}
-	delete[] d;
+}
+
+
+
+
+TriangularMatrixLazy::TriangularMatrixLazy(int n, Point** pointTable){
+	N = n;							// the matrix has N rows
+	PointTable = pointTable;
+	Zero = 0.0;
+
+	d = new double*[N];			// allocate pointers for these N rows
+	for(int i = 0; i < N; i++){
+		d[i] = new double[i];	// row number "i" has "i" elements : triangular!
+		for(int j = 0; j < i; j++){
+			d[i][j] = -1.0;
+		}
+	}
+}
+
+
+double& TriangularMatrixLazy::operator ()(int i, int j){
+	// if( i == j ){				// i == j => main diagonal => always 0
+	// 	return Zero;
+	// }
+	// else{
+	// 	result = PointTable[i]->distance( PointTable[j] );
+	// 	return result;
+	// }
+
+	if( i == j ){				// i == j => main diagonal => always 0
+		return Zero;
+	}
+	else if( i < j ){			// i < j => upper triangular part => get corresponding lower part
+
+		if( d[j][i] == -1.0 ){
+			d[j][i] = PointTable[i]->distance( PointTable[j] );
+		}
+		return d[j][i];
+
+	}
+	else{						// i > j => procceed normally
+		if( d[i][j] == -1.0 ){
+			d[i][j] = PointTable[i]->distance( PointTable[j] );
+		}
+		return d[i][j];
+
+	}
+
 }

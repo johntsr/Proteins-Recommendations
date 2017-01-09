@@ -42,5 +42,10 @@ class K_MedoidsPP: public Initializer{
 		void initialise(void);
 };
 
+class RandInit: public Initializer{
+	public:
+		RandInit( int* centers, TriangularMatrix* dPtr, int k, int n );
+		void initialise(void);
+};
 
 #endif

@@ -24,7 +24,7 @@ void Clustering::printInfo(std::ofstream& outfFile){
 	outfFile << message << '\n';
 }
 
-ClusterAlgorithm::ClusterAlgorithm(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s) {
+ClusterAlgorithm::ClusterAlgorithm(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s, bool random) {
 
 	N = n;											// keep the number of points
 	PointTable = pointTable;						// the table is filled by the caller, just keep a reference to it
@@ -45,7 +45,11 @@ ClusterAlgorithm::ClusterAlgorithm(Point** pointTable, TriangularMatrix* dPtr, i
 	message = "Algorithm: ";
 
 	// pick an initializer
-	if( (type / 4) % 2 == 0){
+	if( random ){
+		Init = new RandInit( Centers, d, K, N );
+		message += "Random";
+	}
+	else if( (type / 4) % 2 == 0){
 		Init = new Park_Jun( Centers, d, K, N );
 		message += "I1";
 	}
@@ -295,8 +299,8 @@ List<AssignPair>* ClusterAlgorithm::getCluster(int k){
 }
 
 
-ProteinsCluster::ProteinsCluster(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s)
- : ClusterAlgorithm(pointTable, dPtr, n, k, type, k_hash, l, q, s){}
+ProteinsCluster::ProteinsCluster(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s, bool random)
+ : ClusterAlgorithm(pointTable, dPtr, n, k, type, k_hash, l, q, s, random){}
 
 
 double ProteinsCluster::evaluate(std::ofstream& outfFile, bool complete, bool print){

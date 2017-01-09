@@ -137,7 +137,7 @@ double MetricSpacePoint::distance(Point* p){
 	int position = (int)temp->getDouble();
 	delete temp;
 
-	if( DistanceMatrix[position] ==-1.0 ){
+	if( DistanceMatrix[position] == -1.0 ){
 		DistanceMatrix[position] = -2.0;
 		DistanceMatrix[position] = p->distance(this);
 		return DistanceMatrix[position];

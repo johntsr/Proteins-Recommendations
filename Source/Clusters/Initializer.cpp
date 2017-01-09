@@ -37,8 +37,7 @@ void Park_Jun::initialise(void){
 	// next, we sort v[] table and pick the 4 points that correspond to the 4 smallest values
 	// in order to maintain the matching between "point i" and "v[i]", a table of indexes keeps track
 	// of the changes that occur during the sort
-	int* indexes;
-	indexes = new int[N];
+	int* indexes = new int[N];
 	for(int i = 0; i < N; i++){
 		indexes[i] = i;				// initially, "point i" matches the value "v[i]"
 	}
@@ -47,6 +46,7 @@ void Park_Jun::initialise(void){
 
 	for(int i = 0; i < K; i++){
 		Centers[i] = indexes[i];	// store the indexes of the 4 points in the centers table
+		std::cout << "center["<<i<<"] = " << Centers[i] << '\n';
 	}
 
 	delete[] indexes;
@@ -78,7 +78,7 @@ void K_MedoidsPP::initialise(void){
 		do{
 			double x;
 			do {
-				x = Math::dRand(0.0, P[N]);			// pick a randmom number
+				x = Math::dRand(0.0, P[N]);			// pick a random number
 			} while( !(x > 0.0) );
 			r = Math::binarySearch(P, N+1, x) - 1;	// search in the P table the matching point
 		} while( !uniqueCenter(k, r) );				// repeat if this point is already chosen as center
@@ -109,4 +109,14 @@ bool K_MedoidsPP::uniqueCenter(int k, int r){
 		}
 	}
 	return true;
+}
+
+
+RandInit::RandInit( int* centers, TriangularMatrix* dPtr, int k, int n )
+: Initializer( centers, dPtr, k, n ){}
+
+void RandInit::initialise(void){
+	for(int k = 0; k < K; k++){
+		Centers[k] = (int)Math::dRand(0,N-1);
+	}
 }

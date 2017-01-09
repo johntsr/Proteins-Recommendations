@@ -92,10 +92,10 @@ mkdir:
 	mkdir -p $(DIR_BUILD)
 
 runSmall:
-	./$(OUT) -d ../../DataSets/bio_small_input.dat -od experim.dat -oc conform.dat
+	time ./$(OUT) -d ../../DataSets/bio_small_input.dat -od experim.dat -oc conform.dat
 
 runMedium:
-	./$(OUT) -d ../../DataSets/bio_medium_input.dat -od experim.dat -oc conform.dat
+	time ./$(OUT) -d ../../DataSets/bio_medium_input.dat -od experim.dat -oc conform.dat
 
 debug:
 	gdb --args ./$(OUT) -d ../../DataSets/bio_small_input.dat -od experim.dat -oc conform.dat

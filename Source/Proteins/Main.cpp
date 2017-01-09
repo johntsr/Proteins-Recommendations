@@ -294,15 +294,7 @@ int main(int argc, char *argv[]) {
 	getPath( dataPath, "Please, enter the path for the data set file" );
 	openFile(dataPath, dataFile);
 
-	if(cManager != NULL){
-		ofstream file( outCPath.c_str() );
-		cManager->run(dataPath, outCPath);
-		if( CUTest ){
-			cManager->runCUTests();
-		}
-		delete cManager;
-	}
-	exit(0);
+
 
 	if( dManagers[0] != NULL ){
 		ofstream file( outDPath.c_str() );
@@ -318,7 +310,14 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-
+	if(cManager != NULL){
+		ofstream file( outCPath.c_str() );
+		cManager->run(dataPath, outCPath);
+		if( CUTest ){
+			cManager->runCUTests();
+		}
+		delete cManager;
+	}
 	return 0;
 }
 

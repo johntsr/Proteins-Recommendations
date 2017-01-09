@@ -80,6 +80,7 @@ Point** RecommendManager::getNextPoint(ifstream& queryFile){				// depends on th
 		ResultRatings[COS_INDEX][count][node->data()->Item] = node->data()->Rating - mean;
 		ResultRatings[EUCL_INDEX][count][node->data()->Item] = node->data()->Rating - mean;
 		ResultRatings[HAM_INDEX][count][node->data()->Item] = node->data()->Rating - mean;
+
 		RealRatings[count][node->data()->Item] = true;
 	}
 
@@ -176,7 +177,7 @@ void RecommendManager::estimateRating(int metric, int user, List<Point, Point*>*
 		double sumRatings = 0.0, sumWeights = 0.0;
 		for (index = 0 ; index < neighborNum; index++ ) {
 
-			if( neighborIndexes[index] == user || ResultRatings[metric][neighborIndexes[index]][item] == DBL_MAX ){
+			if( neighborIndexes[index] == user || !RealRatings[neighborIndexes[index]][item]){
 				continue;
 			}
 
@@ -214,9 +215,14 @@ void RecommendManager::run(std::string& dataPath, std::string& outPath){
 		evaluate(metric, outFile, Messages[metric]);
 	}
 
-	if( Validate ){
-		validate(outFile);
-	}
+	// runTests(HAM_INDEX, outFile);
+	// evaluate(HAM_INDEX, outFile, Messages[HAM_INDEX]);
+
+
+
+	// if( Validate ){
+	// 	validate(outFile);
+	// }
 
 	finalise();
 }
@@ -331,6 +337,7 @@ void RecommendManager::validate(std::ofstream& outFile){
 		double fMAE[3] = {0.0, 0.0, 0.0};
 		for(int metric = 0; metric < 3; metric++){
 			runTests(metric, outFile);
+
 			for(Index user(Partitions[f]); user < Partitions[f]->size(); user++){
 				for(int item = 0; item < NumItems; item++){
 					if( !RealRatings[*user][item] ){	// NOTE: NOT!
@@ -344,6 +351,7 @@ void RecommendManager::validate(std::ofstream& outFile){
 			fMAE[metric] /= Partitions[f]->size();
 			MAE[metric] += fMAE[metric];
 		}
+
 
 		for(Index user(&DataSet); user < DataSet.size(); user++){
 			DataPoint[*user] = false;
@@ -519,8 +527,8 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(int metric, int user){
 		std::cout << "count = " << ResultPointsSmall->count() << std::endl;
 		exit(0);
 	}
-	
-	
+
+
 	if( abs(ResultPointsSmall->count() - P) < Tolerance ){
 		delete ResultPointsBig;
 		return ResultPointsSmall;
@@ -616,22 +624,28 @@ void ClusterRecommendManager::fillTable(std::string dataPath){
 	for(int metric = 0; metric < 3; metric++){
 		findAlgorithm(metric);
 	}
+
+	// findAlgorithm(HAM_INDEX);
+
+
 }
 
 void ClusterRecommendManager::findAlgorithm(int metric){
 	Algorithm[metric] = NULL;
 	d[metric] = new TriangularMatrix(NumUsers, PointTable[metric]);
 
-	double bestScore = DBL_MAX;
-	ofstream outFile("");
-	int UpperBound = log2(NumUsers);
+	double bestScore = -2.0;
+	ofstream outFile("dssdsd");
+	int UpperBound = log2(NumUsers) * 3;
 	for( int clusters = 2; clusters < UpperBound; clusters++){
-		ClusterAlgorithm* tempClustering = new ClusterAlgorithm(PointTable[metric], d[metric], NumUsers, clusters, 4, -1, -1, -1, -1);
+		// ClusterAlgorithm* tempClustering = new ClusterAlgorithm(PointTable[metric], d[metric], NumUsers, clusters, 4, -1, -1, -1, -1);
+		ClusterAlgorithm* tempClustering = new ClusterAlgorithm(PointTable[metric], d[metric], NumUsers, clusters, 0, -1, -1, -1, -1);
 
 		tempClustering->run();
 
-		double tempScore = tempClustering->evaluate(outFile, false, false);
-		if( tempScore < bestScore ){
+		double tempScore = tempClustering->evaluate(outFile, false, true);
+		// std::cout << "score = " << tempScore << '\n';
+		if( tempScore > bestScore ){
 			bestScore = tempScore;
 			K_clusters[metric] = clusters;
 			if( Algorithm[metric] != NULL ){
@@ -643,9 +657,29 @@ void ClusterRecommendManager::findAlgorithm(int metric){
 			delete tempClustering;
 		}
 	}
+
+	// std::cout << "clusters[" << metric << "] = " << K_clusters[metric] << '\n';
+	// for(int i = 0; i < K_clusters[metric]; i++){
+	// 	std::cout << "i = " << i << ", size = " << Algorithm[metric]->getCluster(i)->count() << '\n';
+	// }
+	// std::cout << '\n' << '\n' << '\n';
 }
 
 void ClusterRecommendManager::runTests(int metric, std::ofstream& outFile){
+	// if( metric == HAM_INDEX ){
+	// 	std::ofstream lala("dist.txt");
+	// 	for(int i = 0; i < NumUsers; i++){
+	// 	// for(int i = 99; i < 100; i++){
+	// 		lala << "Point " << i + 1 << endl;
+	// 		for(int j = 0; j < NumUsers; j++){
+	// 			// PointTable[metric][i]->print();
+	// 			// PointTable[metric][j]->print();
+	// 			lala << "distance from " << j + 1 << " = " << (*d[metric])(i,j) << '\n';
+	// 		}
+	// 	}
+	// }
+
+
 	for(int k = 0; k < K_clusters[metric]; k++){
 		List<AssignPair>* cluster = Algorithm[metric]->getCluster(k);
 		List<Point, Point*>* Neighbors = findNeighbours(metric, cluster);

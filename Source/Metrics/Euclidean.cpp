@@ -68,7 +68,7 @@ double EuclideanPointSparse::distance(Point* p){
 			dist += diff * diff;
 		}
 	}
-	else if( j < pLength){
+	else if( j < pLength ){
 		for( ; j < pLength; j++ ){
 			diff = P_Array[j].getDouble();
 			dist += diff * diff;

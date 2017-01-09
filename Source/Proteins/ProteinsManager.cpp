@@ -62,13 +62,13 @@ void ProteinsManager::runCUTests(void){
 }
 
 void ProteinsManager::runTests(ofstream& outfFile){
-	double bestScore = DBL_MAX;
+	double bestScore = -2.0;
 	double bestTime = 0.0;
 	Algorithm = NULL;
 	int times = 0;
 	int UpperBound = log2(numConform) * 5;
 	for( int clusters = 2; clusters < UpperBound; clusters++){
-		ProteinsCluster* tempClustering = new ProteinsCluster(PointTable, d, numConform, clusters, 4, -1, -1, -1, -1);
+		ProteinsCluster* tempClustering = new ProteinsCluster(PointTable, d, numConform, clusters, 4, -1, -1, -1, -1, RandCluster);
 
 		clock_t start = clock();		// start measuring time
 		tempClustering->run();
@@ -76,7 +76,7 @@ void ProteinsManager::runTests(ofstream& outfFile){
 		bestTime = (end - start)/(double)CLOCKS_PER_SEC;
 
 		double tempScore = tempClustering->evaluate(outfFile, Complete, false);
-		if( tempScore < bestScore ){
+		if( tempScore > bestScore ){
 			bestScore = tempScore;
 			K_clusters = clusters;
 			BestTime = bestTime;
@@ -94,6 +94,13 @@ void ProteinsManager::runTests(ofstream& outfFile){
 			std::cout << "Done " << times << "!" << '\n';
 		}
 	}
+
+	std::cout << "clusters = " << K_clusters << '\n';
+	for(int i = 0; i < K_clusters; i++){
+		std::cout << "i = " << i << ", size = " << Algorithm->getCluster(i)->count() << '\n';
+	}
+	std::cout << '\n' << '\n' << '\n';
+
 	evaluate(outfFile);
 }
 
@@ -106,7 +113,7 @@ void ProteinsManager::fillTable(std::string dataPath){
 		PointTable[i] = getNextPoint(file);		// store all the points
 	}
 
-	d = new TriangularMatrix(numConform, PointTable);
+	d = new TriangularMatrixLazy(numConform, PointTable);
 }
 
 void ProteinsManager::finalise(void){
@@ -134,7 +141,9 @@ ProteinsManager::~ProteinsManager(){
 ******************************************************************/
 
 cRMSDManager::cRMSDManager(bool complete)
-: ProteinsManager(complete) {}
+: ProteinsManager(complete) {
+	RandCluster = true;
+}
 
 Point* cRMSDManager::getNextPoint(ifstream& queryFile){				// depends on the format of the file
 	static int count = -1;
@@ -172,6 +181,7 @@ dRMSDManager::dRMSDManager(dOption t, rGenerator func, bool complete)
 : ProteinsManager(complete) {
 	Func = func;
 	T = t;
+	RandCluster = false;
 }
 
 Point* dRMSDManager::getNextPoint(ifstream& queryFile){				// depends on the format of the file

@@ -116,11 +116,10 @@ bool SparsePoint::operator == (Point* p){				// defines the equality of 2 points
 
 // @override
 void SparsePoint::print(void){
-	// Quantity* Array   = value();
 
-	// for(int i = 0; i < dimension(); i++){
-	// 	std::cout << Array[i].getString() << " ";
-	// }
+	for(int i = 0; i < Length; i++){
+		std::cout << "item = " << Indexes[i] << ", rating = " << SparseArray[i].getDouble() << " ";
+	}
 	std::cout << name() << std::endl;
 }
 

@@ -28,21 +28,40 @@ class AssignPair{
 // the matrix is symmetric, and the main diagonal is all "0" (zeroes)
 // so, we keep the strict lower triangular matrix
 class TriangularMatrix{
-	private:
+	protected:
 		double** d;		// the table (stored as pointer to rows)
 		int 	N;			// the number of rows
 
 		double Zero;
 
+		TriangularMatrix(){}
+
 	public:
 
 		TriangularMatrix(int n, Point** PointTable );
 
+		virtual double& operator ()(int i, int j);		// access to the d[i][j] element
+
+		virtual void print(void);
+
+		virtual ~TriangularMatrix();
+};
+
+class TriangularMatrixLazy: public TriangularMatrix{
+	private:
+		Point** PointTable;
+
+		double result;
+
+	public:
+
+		TriangularMatrixLazy(int n, Point** PointTable );
+
 		double& operator ()(int i, int j);		// access to the d[i][j] element
 
-		void print(void);
+		// void print(void);
 
-		~TriangularMatrix();
+		~TriangularMatrixLazy(){}
 };
 
 

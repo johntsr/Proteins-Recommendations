@@ -50,7 +50,7 @@ class ClusterAlgorithm: public Clustering{
 		void 	computeSilhouette(void);
 
 	public:
-		ClusterAlgorithm(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s);
+		ClusterAlgorithm(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s, bool random = false);
 
 		void run(void);						// run the algorithm
 		double getJ(void){ return J; }		// get value of objective function
@@ -70,7 +70,7 @@ class ClusterAlgorithm: public Clustering{
 
 class ProteinsCluster: public ClusterAlgorithm{
 	public:
-		ProteinsCluster(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s);
+		ProteinsCluster(Point** pointTable, TriangularMatrix* dPtr, int n, int k, int type, int k_hash, int l, int q, int s, bool random);
 		double evaluate	(std::ofstream& outfFile, bool complete, bool print);
 };
 

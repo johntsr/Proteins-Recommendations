@@ -21,6 +21,8 @@ class ProteinsManager{													// abstract class used to communicate with th
 		int K_clusters;						// the number of clusters
 		bool Complete;						// whether to print all the clusters or just the centers
 
+		bool RandCluster;
+
 		void getPath		(std::string& path, std::string message);// promts "message" to the user, then takes "path" from stdin
 		void openFileWrite	(std::string& path, std::ofstream& file);// open a file in order to write to it
 		void fillTable		(std::string dataPath);					// fills "PointTable" form a file

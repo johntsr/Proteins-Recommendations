@@ -24,7 +24,7 @@ HammingPoint::HammingPoint(std::string name, List<Pair>* ratingList, int dimensi
 	Value = new Bitset(dimension);
 
 	for (Node<Pair>* node = ratingList->start() ; node != NULL; node = node->next() ) {
-		if( node->data()->Rating >= 3 ){
+		if( node->data()->Rating >= 1 ){
 			Value->set( node->data()->Item );
 		}
 	}
