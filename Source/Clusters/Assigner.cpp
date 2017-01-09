@@ -18,11 +18,9 @@ Assigner::Assigner(TriangularMatrix* dPtr, int n, int* centers, int k, List<Assi
 void Assigner::assignBrute(int i, int& center, int& center2){
 	double min  = 0.0;										// just an initial value
 	double min2 = 0.0;										// just an initial value
-	std::cout << "examine point " << i << '\n';
 	for(int k = 0; k < K; k++){								// iterate over centers to find the min distance from the point
 		double temp = (*d)( i, Centers[k] );				// get the distance
 
-		// std::cout << "dist from " << Centers[k] << " = " << temp << '\n';
 		if( center == NONE || temp < min ){					// if it is smaller than the so-far-best
 			min = temp;										// update the distance
 			center2 = center;								// the best

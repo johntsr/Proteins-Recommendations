@@ -1,7 +1,3 @@
-r: 369 , T = 0 , k = 3, silhouette = 0.634836 execution time = 0.003929 secs.
-r: 369 , T = 1 , k = 3, silhouette = 0.637899 execution time = 0.002835 secs.
-r: 369 , T = 2 , k = 4, silhouette = 0.649949 execution time = 0.0048 secs.
-r: 7088 , T = 0 , k = 3, silhouette = 0.661431 execution time = 0.004747 secs.
-r: 7088 , T = 1 , k = 38, silhouette = 0.638035 execution time = 0.011465 secs.
-r: 7088 , T = 2 , k = 39, silhouette = 0.642182 execution time = 0.010627 secs.
-r: 67896 , T = 0 , k = 4, silhouette = 0.661199 execution time = 0.001797 secs.
+r: 369 , T = Smallest , k = 2, silhouette = 0.626278 execution time = 0.268356 secs.
+r: 369 , T = Largest , k = 40, silhouette = 0.633715 execution time = 0.008234 secs.
+r: 369 , T = Random , k = 32, silhouette = 0.568047 execution time = 0.005388 secs.

@@ -90,18 +90,6 @@ void openFile(string& path, fstream& file);
 void parseArguments(int argc, char** argv, string& dataPath, string& outPath, bool& CUTest );
 
 
-int low(int N){
-	return N;
-}
-
-int medium(int N){
-	return N * sqrt(N);
-}
-
-int high(int N){
-	return N * (N - 1) / 2;
-}
-
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
 	//createBinaryFile(64);
@@ -115,8 +103,8 @@ int main(int argc, char *argv[]) {
 
 	parseArguments(argc, argv, dataPath, outPath, CUTest );
 
-	RecommendManager* manager =  new NNRecommendManager(true);
-	// RecommendManager* manager =  new ClusterRecommendManager(true);
+	// RecommendManager* manager =  new NNRecommendManager(true);
+	RecommendManager* manager =  new ClusterRecommendManager(true);
 
 	getPath( dataPath, "Please, enter the path for the data set file" );
 	openFile(dataPath, dataFile);

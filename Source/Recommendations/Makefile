@@ -97,7 +97,7 @@ mkdir:
 	mkdir -p $(DIR_BUILD)
 
 runXS:
-	./$(OUT) -d ../../DataSets/yahoo_music_xs.dat -o results_xs.dat
+	time ./$(OUT) -d ../../DataSets/yahoo_music_xs.dat -o results_xs.dat
 
 runSmall:
 	./$(OUT) -d ../../DataSets/yahoo_music_small.dat -o results_small.dat

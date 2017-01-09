@@ -7,10 +7,12 @@
 
 using namespace std;
 
+
+// helper class for defining a partition of a bigger table
 class Partition{
 	private:
-		int* Indexes;
-		int Size;
+		int* Indexes;		// indexes to the larger table
+		int Size;			// the number of indexes
 
 	public:
 		Partition(Partition** Partitions, int PartitionsNum, int valPartition);
@@ -32,11 +34,14 @@ class Partition{
 		~Partition();
 };
 
+
+// helper class for iterating over a partition
 class Index{
 	private:
-		Partition* Part;
-		int _Index;
+		Partition* Part;					// the partition to iterate on
+		int _Index;							// the current index in the partition
 	public:
+
 		Index(Partition* part, int i = 0){
 			_Index = i;
 			Part = part;

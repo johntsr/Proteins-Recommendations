@@ -54,8 +54,8 @@ ClusterAlgorithm::ClusterAlgorithm(Point** pointTable, TriangularMatrix* dPtr, i
 		message += "I1";
 	}
 	else{
-		message += "I2";
 		Init = new K_MedoidsPP( Centers, d, K, N );
+		message += "I2";
 	}
 
 	// pick an assigner

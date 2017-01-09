@@ -10,21 +10,26 @@
 
 typedef int (*rGenerator)(int N);
 
-class RecommendManager{													// abstract class used to communicate with the user
+// abstract class used to communicate with the user
+class RecommendManager{
 	protected:
-		Point** PointTable[3];			// the table of points to be clustered
-		int 	NumUsers;					// thr number of points
-		int 	NumItems;
+		Point** PointTable[3];			// the table of points to be clustered (1 per metric)
+		int 	NumUsers;				// the number of users
+		int 	NumItems;				// the number of items
 
-		List<List<Pair> > Ratings;
+		// hash table between user number and point in "PointTable"
 		HashTable<PointIndex, Point*>* PointMap[3];
-		double* MeanRatings;
-		double** ResultRatings[3];
-		bool** RealRatings;
-		bool* DataPoint;
-		double MAE[3];
-		std::string Messages[3];
-		bool Validate;
+
+		List<List<Pair> > Ratings;		// the actual ratings of each user
+		double* MeanRatings;			// mean rating of each user
+		bool** RealRatings;				// true for items the user rated
+		bool* DataPoint;				// true for users to skip in predictions (used in validation process)
+
+		double** ResultRatings[3];		// results of predictions (1 per metric)
+		double MAE[3];					// Mean Absolute Error (1 per metric)
+		std::string Messages[3];		// Evaluation message  (1 per metric)
+
+		bool Validate;					// whether to perform F-fold cross validation
 
 		void getPath		(std::string& path, std::string message);// promts "message" to the user, then takes "path" from stdin
 		void openFileWrite	(std::string& path, std::ofstream& file);// open a file in order to write to it
@@ -54,7 +59,7 @@ class RecommendManager{													// abstract class used to communicate with t
 
 class NNRecommendManager: public RecommendManager{
 	private:
-		LocalHashTable<Point, Point*>* LSH[3];							// the Locality Sensitive Hash Table
+		LocalHashTable<Point, Point*>* LSH[3];						// the Locality Sensitive Hash Table
 		hash_function** hashFunctions[3];
 		int L_hash;													// the number of Hash Tables the above table uses
 		int K_hash;													// the number of "h" hash functions we use
@@ -80,7 +85,7 @@ class ClusterRecommendManager: public RecommendManager{
 	private:
 
 		TriangularMatrix* d[3];				// the table of precomputed distances
-		int K_clusters[3];						// the number of clusters
+		int K_clusters[3];					// the number of clusters
 		ClusterAlgorithm* Algorithm[3];		// the algorithms to run
 
 		void 	fillTable		(std::string dataPath);

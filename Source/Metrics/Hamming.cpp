@@ -4,6 +4,7 @@
 #include <bitset>
 #include <limits.h>
 
+#define RATING_BOUND 1
 
 /*****************************************************************
 ***************** HammingPoint class methods *********************
@@ -24,7 +25,7 @@ HammingPoint::HammingPoint(std::string name, List<Pair>* ratingList, int dimensi
 	Value = new Bitset(dimension);
 
 	for (Node<Pair>* node = ratingList->start() ; node != NULL; node = node->next() ) {
-		if( node->data()->Rating >= 1 ){
+		if( node->data()->Rating >= RATING_BOUND ){
 			Value->set( node->data()->Item );
 		}
 	}
@@ -105,16 +106,25 @@ PointType HammingPoint::type(void){
 ******************************************************************/
 
 Hamming_h::Hamming_h(int length){						// length of the input bitstring
-	int position = length * Math::dRand();				// randomply pick a bit to "peek"
-	Bitset* temp = new Bitset(length);
-	temp->set(position);
-	Mask = new HammingPoint( "mask", temp );			// create a point out of this mask
+
+	for(int i = 0; i < MASKS; i++){
+		int position = length * Math::dRand();				// randomply pick a bit to "peek"
+		Bitset* temp = new Bitset(length);
+		temp->set(position);
+		Mask[i] = new HammingPoint( "mask", temp );			// create a point out of this mask
+	}
 }
 
 uint64_t Hamming_h::hash(Point* p ){					// map a multi-dimensional hamming point into an integer
-	Quantity* temp = p->multiply(Mask);
-	bool nonZero = temp->getBits()->count() > 0;		// bitwise AND between point and mask => bit exrtaction
-	delete temp;
+
+	bool nonZero = false;
+	for(int i = 0; i < MASKS; i++){
+		Quantity* temp = p->multiply(Mask[i]);
+		nonZero = nonZero || temp->getBits()->count() > 0;		// bitwise AND between point and mask => bit exrtaction
+		delete temp;
+	}
+
+
 	if (  nonZero ){									// non negative result means the bit was 1
 		return 1;
 	}
@@ -124,5 +134,7 @@ uint64_t Hamming_h::hash(Point* p ){					// map a multi-dimensional hamming poin
 }
 
 Hamming_h::~Hamming_h(){
-	delete Mask;
+	for(int i = 0; i < MASKS; i++){
+		delete Mask[i];
+	}
 }

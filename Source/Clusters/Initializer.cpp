@@ -46,7 +46,6 @@ void Park_Jun::initialise(void){
 
 	for(int i = 0; i < K; i++){
 		Centers[i] = indexes[i];	// store the indexes of the 4 points in the centers table
-		std::cout << "center["<<i<<"] = " << Centers[i] << '\n';
 	}
 
 	delete[] indexes;
