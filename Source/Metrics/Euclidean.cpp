@@ -6,31 +6,31 @@
 #include <limits.h>
 
 
-// // @override
-// double EuclideanPoint::distance(Point* p){
-// 	// just follow the definition of the e-class slides
-// 	Quantity* Array1  = value() ;					// get array of co-ordinates for this point
-// 	Quantity* Array2  = p->value();					// as well as for p
-// 	double distance = 0.0;							// the distance is gradually builh here
-// 	for( int i = 0; i < dimension() ; i++){
-// 		double diff = ( Array1[i].getDouble() - Array2[i].getDouble() );
-// 		distance += diff * diff;	// euclidean norm
-// 	}
-//
-// 	return distance;
-// }
-//
-// // @override
-// double EuclideanPoint::similarity(Point* p){
-// 	return 1.0 / ( distance(p) + 1.0  );			// compute the distance (in [0,2] )
-// }
-//
-// // @override
-// PointType EuclideanPoint::type(void){
-// 	return EUCLIDEAN;
-// }
-//
-//
+// @override
+double EuclideanPoint::distance(Point* p){
+	// just follow the definition of the e-class slides
+	Quantity* Array1  = value() ;					// get array of co-ordinates for this point
+	Quantity* Array2  = p->value();					// as well as for p
+	double distance = 0.0;							// the distance is gradually builh here
+	for( int i = 0; i < dimension() ; i++){
+		double diff = ( Array1[i].getDouble() - Array2[i].getDouble() );
+		distance += diff * diff;	// euclidean norm
+	}
+
+	return distance;
+}
+
+// @override
+double EuclideanPoint::similarity(Point* p){
+	return 1.0 / ( distance(p) + 1.0  );			// compute the distance (in [0,2] )
+}
+
+// @override
+PointType EuclideanPoint::type(void){
+	return EUCLIDEAN;
+}
+
+
 
 
 

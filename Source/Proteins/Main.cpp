@@ -102,7 +102,172 @@ int high(int N){
 	return N * (N - 1) / 2;
 }
 
+
+
+
+
+
+
+
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
+
+
+double computeDistance1(double* x, double* y, int N){
+	// std::cout << "get in!" << std::endl;
+	double u[3*3];
+
+	gsl_matrix_view X = gsl_matrix_view_array(x, N, 3);
+	gsl_matrix_view Y = gsl_matrix_view_array(y, N, 3);
+	gsl_matrix_view U = gsl_matrix_view_array(u, 3, 3);
+
+	/* Compute C = A B */
+
+	// TODO: C IS REPLACED IS BY C!!!!
+	gsl_blas_dgemm (CblasTrans, CblasNoTrans,
+	              1.0, &X.matrix, &Y.matrix,
+	              0.0, &U.matrix);
+
+
+	gsl_matrix * V = gsl_matrix_alloc(3, 3);
+	gsl_vector * S = gsl_vector_alloc(3);
+	gsl_vector * work = gsl_vector_alloc(3);
+
+	// TODO: C IS REPLACED IS BY U!!!!
+	gsl_linalg_SV_decomp(&U.matrix, V, S, work);
+
+	// for(int i = 0; i < 3; i++){
+	// 	for(int j = 0; j < 3; j++){
+	// 		std::cout << gsl_matrix_get (V, i, j) << ' ';
+	// 	}
+	// 	std::cout << '\n';
+	// }
+	//
+	// std::cout << '\n';
+	// std::cout << '\n';
+	// for(int i = 0; i < 3; i++){
+	// 	for(int j = 0; j < 3; j++){
+	// 		std::cout << u[i*3 + j] << ' ';
+	// 	}
+	// 	std::cout << '\n';
+	// }
+	//
+	// std::cout << '\n';
+	// std::cout << '\n';
+	// for(int j = 0; j < 3; j++){
+	// 	std::cout << gsl_vector_get (S, j) << ' ';
+	// 	std::cout << '\n';
+	// }
+
+
+
+	double q[3*3];
+	gsl_matrix_view Q = gsl_matrix_view_array(q, 3, 3);
+	gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, 1.0, &U.matrix, V, 0.0, &Q.matrix);
+
+	std::cout << "before q = " << '\n';
+	for(int i = 0; i < 3; i++){
+		for(int j = 0; j < 3; j++){
+			std::cout << q[i*3 + j] << ' ';
+		}
+		std::cout << '\n';
+	}
+
+	std::cout << "before u = " << '\n';
+	for(int i = 0; i < 3; i++){
+		for(int j = 0; j < 3; j++){
+			std::cout << u[i*3 + j] << ' ';
+		}
+		std::cout << '\n';
+	}
+
+	int signum = 0.0;
+	gsl_permutation *p = gsl_permutation_alloc(3);
+	gsl_matrix *tmpQ = gsl_matrix_alloc(3, 3);
+	gsl_matrix_memcpy(tmpQ, &Q.matrix);
+	gsl_linalg_LU_decomp(tmpQ , p , &signum);
+	double det = gsl_linalg_LU_det(tmpQ, signum);
+	std::cout << "det = " << det << '\n';
+	if( det < 0.0 ){
+		for(int i = 0; i < 3; i++){
+			u[i*3 + 2] *= -1.0;
+		}
+
+		gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, 1.0, &U.matrix, V, 0.0, &Q.matrix);
+	}
+
+	std::cout << "after q = " << '\n';
+	for(int i = 0; i < 3; i++){
+		for(int j = 0; j < 3; j++){
+			std::cout << q[i*3 + j] << ' ';
+		}
+		std::cout << '\n';
+	}
+
+	std::cout << "after u = " << '\n';
+	for(int i = 0; i < 3; i++){
+		for(int j = 0; j < 3; j++){
+			std::cout << u[i*3 + j] << ' ';
+		}
+		std::cout << '\n';
+	}
+	// exit(0);
+
+
+	double* d = new double[N*3];
+	gsl_matrix_view Diff = gsl_matrix_view_array(d, N, 3);
+	gsl_blas_dgemm (CblasNoTrans, CblasNoTrans, 1.0, &X.matrix, &Q.matrix, 0.0, &Diff.matrix);
+	gsl_matrix_sub(&Diff.matrix, &Y.matrix);
+
+	double result = 0.0;
+	for(int i = 0; i < N; i++){
+		for(int j = 0; j < 3; j++){
+			result += d[i*3 + j] * d[i*3 + j];
+		}
+	}
+	result /= sqrt(N);
+
+
+	gsl_permutation_free(p);
+	gsl_matrix_free(tmpQ);
+	gsl_matrix_free(V);
+	gsl_vector_free(S);
+	gsl_vector_free(work);
+	delete[] d;
+
+	// std::cout << "get out! (result = " << result << ")" << std::endl;
+	return result;
+}
+
+
+// { 	{1, 2, 3},
+// 	{5, 6, 7},
+// 	{9, 10, 11},
+// 	{13, 14, 15}
+// }
+
+// { 	{11, 2, 31},
+// 	{51, 6, 71},
+// 	{91, 10, 11},
+// 	{13, 114, 15}
+// }
+
 int main(int argc, char *argv[]) {
+
+	// double x[] = { 	1, 2, 3,
+	//  				5, 6, 7,
+	// 				9, 10, 11,
+	// 				13, 14, 15};
+	//
+	// double y[] = { 	11, 2, 31,
+	//  				51, 6, 71,
+	// 				91, 10, 11,
+	// 				13, 114, 15};
+	//
+	// std::cout << "dist = " << computeDistance1(x, y, 4) << '\n';
+	//
+	// return 0;
+
 	srand(time(NULL));
 	//createBinaryFile(64);
 	//createVectorFile();
@@ -129,6 +294,16 @@ int main(int argc, char *argv[]) {
 	getPath( dataPath, "Please, enter the path for the data set file" );
 	openFile(dataPath, dataFile);
 
+	if(cManager != NULL){
+		ofstream file( outCPath.c_str() );
+		cManager->run(dataPath, outCPath);
+		if( CUTest ){
+			cManager->runCUTests();
+		}
+		delete cManager;
+	}
+	exit(0);
+
 	if( dManagers[0] != NULL ){
 		ofstream file( outDPath.c_str() );
 		for(int i = 0; i < ManagersNum; i++){
@@ -143,14 +318,6 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	if(cManager != NULL){
-		ofstream file( outCPath.c_str() );
-		cManager->run(dataPath, outCPath);
-		if( CUTest ){
-			cManager->runCUTests();
-		}
-		delete cManager;
-	}
 
 	return 0;
 }

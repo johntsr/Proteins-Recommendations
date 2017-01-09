@@ -164,7 +164,7 @@ cRMSDManager::~cRMSDManager(){
 
 int dRMSDManager::R = 0;
 bool dRMSDManager::firstTime = true;
-Pair* dRMSDManager::Indexes = NULL;
+PairDummy* dRMSDManager::Indexes = NULL;
 
 double* dRMSDManager::Configuration = NULL;
 
@@ -196,12 +196,12 @@ Point* dRMSDManager::getNextPoint(ifstream& queryFile){				// depends on the for
 	if( firstTime ){
 		firstTime = false;
 		R = Func(N);
-		Indexes = new Pair[R];
+		Indexes = new PairDummy[R];
 
 
 		if( T == SMALLEST || T == LARGEST ){
 			int DistLength = N * (N - 1) / 2;
-			Pair* tempIndexes = new Pair[DistLength];
+			PairDummy* tempIndexes = new PairDummy[DistLength];
 			double* Distances = new double[DistLength];
 
 			for(int i = 0, d = 0; i < 3*N; i += 3){

@@ -9,7 +9,7 @@ struct Pair{
 	int Item;
 	int Rating;
 
-	Pair(int item, int rating){
+	Pair(int item = 0, int rating = 0){
 		Item = item;
 		Rating = rating;
 	}

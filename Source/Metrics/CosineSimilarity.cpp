@@ -6,35 +6,35 @@
 #include <limits.h>
 
 
-// // @override
-// double CosinePoint::distance(Point* p){
-// 	// just follow the definition of the e-class slides
-// 	Quantity* temp;
-//
-// 	temp = multiply(p);
-// 	double product = temp->getDouble();						// inner product
-// 	delete temp;
-//
-// 	temp = multiply(this);
-// 	double magnitude1 = sqrt( temp->getDouble() );			// norm(x) = inner_product(x,x)
-// 	delete temp;
-//
-// 	temp = p->multiply(p);
-// 	double magnitude2 = sqrt( temp->getDouble() );			// same here
-// 	delete temp;
-//
-// 	return 1.0 - ( product / ( magnitude1 * magnitude2 ) );	// compute the distance (in [0,2] )
-// }
-//
-// // @override
-// double CosinePoint::similarity(Point* p){
-// 	return 1 - distance(p);
-// }
-//
-// // @override
-// PointType CosinePoint::type(void){
-// 	return COSINE;
-// }
+// @override
+double CosinePoint::distance(Point* p){
+	// just follow the definition of the e-class slides
+	Quantity* temp;
+
+	temp = multiply(p);
+	double product = temp->getDouble();						// inner product
+	delete temp;
+
+	temp = multiply(this);
+	double magnitude1 = sqrt( temp->getDouble() );			// norm(x) = inner_product(x,x)
+	delete temp;
+
+	temp = p->multiply(p);
+	double magnitude2 = sqrt( temp->getDouble() );			// same here
+	delete temp;
+
+	return 1.0 - ( product / ( magnitude1 * magnitude2 ) );	// compute the distance (in [0,2] )
+}
+
+// @override
+double CosinePoint::similarity(Point* p){
+	return 1 - distance(p);
+}
+
+// @override
+PointType CosinePoint::type(void){
+	return COSINE;
+}
 
 
 

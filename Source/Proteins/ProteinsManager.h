@@ -53,7 +53,7 @@ public:
 
 enum dOption { SMALLEST, LARGEST, RANDOM };
 
-struct Pair{
+struct PairDummy{
 	int i;
 	int j;
 };
@@ -62,7 +62,7 @@ class dRMSDManager: public ProteinsManager{
 	private:
 		static int R;
 		static bool firstTime;
-		static Pair* Indexes;
+		static PairDummy* Indexes;
 
 		static double* Configuration;
 
