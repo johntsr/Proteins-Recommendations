@@ -35,7 +35,7 @@ class HammingPoint: public Point {
 // represents the "h" hash function of the e-class slides
 // i.e. it just "extracts" a bit of a specific position
 
-#define MASKS 20
+#define MASKS 40
 class Hamming_h: public hash_function{
 	private:
 		Point* Mask[MASKS];							// mask used to extract the above specific bit

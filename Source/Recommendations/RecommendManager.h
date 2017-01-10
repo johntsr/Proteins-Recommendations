@@ -5,8 +5,8 @@
 #include "../Clusters/Clusters.h"
 
 #include <iostream>
-#include <string>
 #include <fstream>
+#include <string>
 
 typedef int (*rGenerator)(int N);
 

@@ -1,7 +1,11 @@
 #include "RecommendManager.h"
 #include "../General/Math.h"
+#include "../General/Timing.h"
+
 
 using namespace std;
+
+#define INTERVAL 5000
 
 #include <bitset>
 
@@ -92,10 +96,7 @@ void parseArguments(int argc, char** argv, string& dataPath, string& outPath, bo
 
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
-	//createBinaryFile(64);
-	//createVectorFile();
-	//createVectorQueryFile();
-	// createProteins();
+	setup(INTERVAL);
 
 	string dataPath, outPath;
 	fstream dataFile;

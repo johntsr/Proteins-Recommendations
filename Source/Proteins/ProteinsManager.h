@@ -34,7 +34,7 @@ class ProteinsManager{
 		virtual void 	openFileRead 	(std::string& path, std::ifstream& file);// open a file in order to read it
 		virtual Point* 	getNextPoint	(std::ifstream& queryFile)=0;// get the next point from a file
 		virtual void 	evaluate		(std::ofstream& outfFile)=0;
-		virtual void 	printMessage	(void)=0;
+		virtual std::string method		(void)=0;
 	public:
 		ProteinsManager(bool complete);
 
@@ -49,7 +49,7 @@ class cRMSDManager: public ProteinsManager{
 private:
 	Point* 	getNextPoint	(std::ifstream& queryFile);					// get the next point from a file
 	void 	evaluate		(std::ofstream& outfFile);
-	void 	printMessage	(void);
+	std::string method		(void);
 public:
 	cRMSDManager(bool complete);
 	~cRMSDManager();
@@ -67,6 +67,9 @@ struct PairDummy{
 class dRMSDManager: public ProteinsManager{
 	private:
 		static double* Configuration;	// array that holds all the info from file
+		static PairDummy* tempIndexes;
+		static double* Distances;
+
 
 		int R; 							// # of distances needed to form a vector out of a protein
 		PairDummy* Indexes;				// the pairs of the edges of the above distances (stored as indexes)
@@ -74,10 +77,14 @@ class dRMSDManager: public ProteinsManager{
 		pickOption T;					// option for LARGEST, SMALLEST or RANDOM for picking the distances
 		rOption rOpt;
 
+		void 	readConfiguration(std::ifstream& queryFile, int count);// read the next configuration from file
+		void 	computeDistances(void);							// compute all distances and sort
+
+
 		Point* 	getNextPoint	(std::ifstream& queryFile);		// get the next point from a file
 		void 	evaluate		(std::ofstream& outfFile);
 		double 	distance		(int i, int j);					// distance of protein i from protein j
-		void 	printMessage	(void);
+		std::string method		(void);
 
 	public:
 		dRMSDManager(pickOption t, rOption, bool complete);

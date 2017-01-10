@@ -1,18 +1,23 @@
 #include "FoldValidation.h"
 #include "RecommendManager.h"
+#include "../General/Timing.h"
 #include "../Metrics/Euclidean.h"
 #include "../Metrics/Hamming.h"
 #include "../Metrics/CosineSimilarity.h"
 #include "../Clusters/Assigner.h"			// need for Hash Table (point index)!
 
-#include <sstream>
 #include <float.h>
+
 
 #define COS_INDEX 0
 #define EUCL_INDEX 1
 #define HAM_INDEX 2
 
 using namespace std;
+
+PrintReset coutR;
+PrintCondReset coutCR;
+
 
 double abs(double x){
 	if( x < 0.0 ){
@@ -236,13 +241,14 @@ void RecommendManager::run(std::string& dataPath, std::string& outPath){
 	// 	evaluate(metric, outFile, Messages[metric]);
 	// }
 
-	runTests(HAM_INDEX, outFile);
-	evaluate(HAM_INDEX, outFile, Messages[HAM_INDEX]);
+	// int index = COS_INDEX;
+	// runTests(index, outFile);
+	// evaluate(index, outFile, Messages[index]);
 
 
-	// if( Validate ){
-	// 	validate(outFile);
-	// }
+	if( Validate ){
+		validate(outFile);
+	}
 
 	finalise();
 }
@@ -254,6 +260,10 @@ void RecommendManager::runCUTests(void){
 void RecommendManager::fillTable(std::string dataPath){
 	ifstream file;
 	openFileRead(dataPath, file);
+
+	stringstream s;
+
+	s << "Parsing user information..."; coutR << s;
 
 	getFileInfo(dataPath);
 
@@ -275,15 +285,21 @@ void RecommendManager::fillTable(std::string dataPath){
 		PointMap[COS_INDEX]->insert( new PointIndex(i, PointTable[COS_INDEX][i]), true );
 		PointMap[EUCL_INDEX]->insert( new PointIndex(i, PointTable[EUCL_INDEX][i]), true );
 		PointMap[HAM_INDEX]->insert( new PointIndex(i, PointTable[HAM_INDEX][i]), true );
+
+		s << "Parsing completion: " << i * 100.0 / NumUsers << "%"; coutCR << s;
 	}
 }
 
 void RecommendManager::evaluate(int metric, std::ofstream& outFile, string Message){
+	stringstream s;
+
+	s << "Evaluating the top 5 items for every user..."; coutR << s;
 
 	// prints the top 5 predicted items
 	int* itemIndexes = new int[NumItems];
 	outFile << Message << endl;
 	for(int i = 0; i < NumUsers; i++){
+
 
 		// keep the indexes of items before sorting
 		for( int j = 0; j < NumItems; j++ ){
@@ -300,6 +316,8 @@ void RecommendManager::evaluate(int metric, std::ofstream& outFile, string Messa
 			}
 		}
 		outFile << endl;
+
+		s << "Evaluation completion: " << i * 100.0 / NumUsers << "%"; coutCR << s;
 	}
 
 	outFile << endl;
@@ -309,7 +327,11 @@ void RecommendManager::evaluate(int metric, std::ofstream& outFile, string Messa
 }
 
 void RecommendManager::validate(std::ofstream& outFile){
+	stringstream s;
 	int F = 10;										// 10- fold cross validation
+
+	s << F << "-fold cross validation taking place now..."; coutR << s;
+
 
 	List<int> positions;
 	for(int i = 0; i < NumUsers; i++){				// create a list that contains
@@ -344,6 +366,7 @@ void RecommendManager::validate(std::ofstream& outFile){
 		}
 
 		Partition DataSet(Partitions, F, f);			// create dataset out of the rest of the partitions
+
 		// skip them in predictions
 		for(Index user(&DataSet); user < DataSet.size(); user++){	// for every user in the data set
 			DataPoint[*user] = true;								// remember not to process him
@@ -386,6 +409,8 @@ void RecommendManager::validate(std::ofstream& outFile){
 				RealRatings[*user][item] = !RealRatings[*user][item];
 			}
 		}
+
+		s << f + 1 << " validation iterations so far..."; coutR << s;
 	}
 
 	// compute the MAE of each metric
@@ -454,9 +479,13 @@ NNRecommendManager::NNRecommendManager(bool validate)
 }
 
 void NNRecommendManager::fillTable(std::string dataPath){
+	stringstream s;
+
 	RecommendManager::fillTable(dataPath);
 
 	int TableSize = 0;
+
+	s << "Creating LSH structures..."; coutR << s;
 
 	TableSize = 1 << K_hash;								// 2^K slots in the Hash Tables
 	hashFunctions[COS_INDEX] = new hash_function*[L_hash];					// allocate 1 for each Hash Table
@@ -485,6 +514,9 @@ void NNRecommendManager::fillTable(std::string dataPath){
 		LSH[COS_INDEX]->insert( PointTable[COS_INDEX][i] );					// store all the points
 		LSH[EUCL_INDEX]->insert( PointTable[EUCL_INDEX][i] );				// store all the points
 		LSH[HAM_INDEX]->insert( PointTable[HAM_INDEX][i] );					// store all the points
+
+		s << "LSH progress: " << i * 100.0 / NumUsers << "%"; coutCR << s;
+
 	}
 }
 
@@ -504,7 +536,14 @@ double NNRecommendManager::getRadius(int metric){
 }
 
 void NNRecommendManager::runTests(int metric, std::ofstream& outFile){
+	stringstream s;
+
+	s << "Estimate ratings for every user... (metric = " << metricName(metric) << ")"; coutR << s;
+
 	for(int i = 0; i < NumUsers; i++){
+
+		s << "Estimation completion: " << (i * 100.0 / NumUsers) << "%"; coutCR << s;
+
 		List<Point, Point*>* Neighbors;
 		Neighbors = findNeighbours(metric, i);
 		estimateRating(metric, i, Neighbors);
@@ -517,15 +556,7 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(int metric, int user){
 		return new List<Point, Point*>();
 	}
 
-	std::cout << "Examine Neighbors of user " << user << std::endl;
-
-
 	Point* point = PointTable[metric][user];					// get the point of global table
-
-	// // TODO
-	// if( metric == HAM_INDEX ){
-	// 	return new List<Point, Point*>();
-	// }
 
 	int times = 0;												// number of times I performed NN query
 	int BarrierTimes = 3;										// max nubmer ot times I permit
@@ -537,19 +568,7 @@ List<Point, Point*>* NNRecommendManager::findNeighbours(int metric, int user){
 	// lists that hold neighbors for big and small radius
 	List<Point, Point*> *ResultPointsSmall = new List<Point, Point*>(), *ResultPointsBig = new List<Point, Point*>();
 
-	clock_t begin = clock();
 	LSH[metric]->inRange( point, RSmall, *ResultPointsSmall );	// perform first query
-	clock_t end = clock();
-	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-
-
-	// if( metric == HAM_INDEX ){	// TODO
-	// 	std::cout << "time of inRange() = " << time_spent << " secs." << std::endl;
-	// 	std::cout << "RSmall = " << RSmall << std::endl;
-	// 	std::cout << "count = " << ResultPointsSmall->count() << std::endl;
-	// 	exit(0);
-	// }
-
 
 	if( abs(ResultPointsSmall->count() - P) < Tolerance ){		// if the total number is OK
 		delete ResultPointsBig;									// retun immediately
@@ -653,23 +672,24 @@ void ClusterRecommendManager::fillTable(std::string dataPath){
 }
 
 void ClusterRecommendManager::findAlgorithm(int metric){
-
+	stringstream s;
+	// TODO
 	Algorithm[metric] = NULL;										// initially, no algorithm was picked
-	d[metric] = new TriangularMatrix(NumUsers, PointTable[metric]);	// initialise the distance matrix
+	d[metric] = new TriangularMatrixLazy(NumUsers, PointTable[metric]);	// initialise the distance matrix
 
 	ofstream dummyFile("");											// needed for function call
 	double bestScore = -2.0;										// initialise "bestScore" to be small enough (Silhouette)
 	int MaxK = log2(NumUsers) * 2;									// max # of clusters I will check
 
-	std::cout << metricName(metric) << ": Ready to select optimal K in [2, " << MaxK - 1 << "] through Silhouette..." << '\n';
+	s << "Ready to select optimal K in [2, " << MaxK - 1 << "] through Silhouette... (metric = " << metricName(metric) << ")"; coutR << s;
+
 	for( int clusters = 2; clusters < MaxK; clusters++){			// for every possible # of clusters
 
-		if( (clusters - 1) % 15 == 0 ){
-			std::cout << "Done " << clusters - 1 << " iterations..." << '\n';
-		}
+		s << "Clustering progress: " << clusters * 100.0 / MaxK << "%"; coutCR << s;
 
 		// pick an algorithm (Park-Jun, PAM-Swap, Lloyd's)
-		ClusterAlgorithm* tempClustering = new ClusterAlgorithm(PointTable[metric], d[metric], NumUsers, clusters, 0, -1, -1, -1, -1);
+		// TODO
+		ClusterAlgorithm* tempClustering = new ClusterAlgorithm(PointTable[metric], d[metric], NumUsers, clusters, 0, -1, -1, -1, -1, true);
 		tempClustering->run();										// run the algorithm
 		double tempScore = tempClustering->evaluate(dummyFile, false, true);	// get his score
 		if( tempScore > bestScore ){								// if its good enough

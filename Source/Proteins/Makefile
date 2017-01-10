@@ -28,7 +28,7 @@ SOURCE			= $(SOURCE_CLUSTER) $(SOURCE_METRICS) $(SOURCE_GENERAL)
 HEADER			= $(HEADER_CLUSTER) $(HEADER_METRICS) $(HEADER_GENERAL) $(HEADER_DATA)
 
 DIR_BUILD = ./Build/
-OBJS 		= $(DIR_BUILD)Main.o $(DIR_BUILD)Hamming.o $(DIR_BUILD)Euclidean.o $(DIR_BUILD)Vector.o $(DIR_BUILD)Sparse.o $(DIR_BUILD)CosineSimilarity.o $(DIR_BUILD)HashFunction.o $(DIR_BUILD)Clusters.o $(DIR_BUILD)ProteinsManager.o $(DIR_BUILD)MetricSpace.o $(DIR_BUILD)Quantity.o $(DIR_BUILD)Initializer.o $(DIR_BUILD)ClusterStructures.o $(DIR_BUILD)Assigner.o $(DIR_BUILD)Updater.o
+OBJS 		= $(DIR_BUILD)Main.o $(DIR_BUILD)Hamming.o $(DIR_BUILD)Euclidean.o $(DIR_BUILD)Timing.o $(DIR_BUILD)Vector.o $(DIR_BUILD)Sparse.o $(DIR_BUILD)CosineSimilarity.o $(DIR_BUILD)HashFunction.o $(DIR_BUILD)Clusters.o $(DIR_BUILD)ProteinsManager.o $(DIR_BUILD)MetricSpace.o $(DIR_BUILD)Quantity.o $(DIR_BUILD)Initializer.o $(DIR_BUILD)ClusterStructures.o $(DIR_BUILD)Assigner.o $(DIR_BUILD)Updater.o
 
 
 # -g option enables debugging mode
@@ -58,6 +58,9 @@ $(DIR_BUILD)Assigner.o: $(DIR_CLUSTER)Assigner.cpp $(HEADER)
 
 $(DIR_BUILD)Updater.o: $(DIR_CLUSTER)Updater.cpp $(HEADER)
 	$(CC) $(FLAGS) $(DIR_CLUSTER)Updater.cpp -o $(DIR_BUILD)Updater.o
+
+$(DIR_BUILD)Timing.o: $(DIR_GENERAL)Timing.cpp $(DIR_GENERAL)Timing.h
+	$(CC) $(FLAGS) $(DIR_GENERAL)Timing.cpp -o $(DIR_BUILD)Timing.o
 
 
 $(DIR_BUILD)Vector.o: $(DIR_GENERAL)Vector.cpp $(DIR_GENERAL)Vector.h $(DIR_GENERAL)Math.h $(HEADER_DATA)

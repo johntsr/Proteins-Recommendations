@@ -1,7 +1,10 @@
 #include "ProteinsManager.h"
 #include "../General/Math.h"
+#include "../General/Timing.h"
 
 using namespace std;
+
+#define INTERVAL 5000
 
 #include <bitset>
 
@@ -94,6 +97,7 @@ void parseArguments(int argc, char** argv, string& dataPath, string& outCPath, s
 
 int main(int argc, char *argv[]) {
 	srand(time(NULL));
+	setup(INTERVAL);
 
 	string dataPath, outCPath, outDPath;
 	fstream dataFile;
@@ -109,7 +113,6 @@ int main(int argc, char *argv[]) {
 	pickOption T[ManagersNum] = {SMALLEST, LARGEST, RANDOM, SMALLEST, LARGEST, RANDOM, SMALLEST};
 
 	rOption r[ManagersNum] = { SMALL, SMALL, SMALL, MEDIUM, MEDIUM, MEDIUM, LARGE};
-	// rGenerator r[ManagersNum] = { &low, &low, &low, &medium, &medium, &medium, &high};
 	for(int i = 0; i < ManagersNum; i++){
 		dManagers[i] = new dRMSDManager(T[i], r[i], complete);
 	 }
