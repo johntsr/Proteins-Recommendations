@@ -64,6 +64,7 @@ RecommendManager::RecommendManager(bool validate) {
 	NumUsers = 0;
 	NumItems = 0;
 	Validate = validate;
+	ValidationNeigbors = false;
 }
 
 Point** RecommendManager::getNextPoint(ifstream& queryFile){
@@ -205,7 +206,8 @@ void RecommendManager::estimateRating(int metric, int user, List<Point, Point*>*
 
 			// skip the neighbor if he is me (of course!)
 			// or if he hasn't rated the item I am interested in
-			if( neighborIndexes[index] == user || !RealRatings[neighborIndexes[index]][item]){
+			if( neighborIndexes[index] == user || !RealRatings[neighborIndexes[index]][item]
+				|| ( ValidationNeigbors && !DataPoint[neighborIndexes[index]] ) ){	// TODO
 				continue;
 			}
 
@@ -236,12 +238,12 @@ void RecommendManager::run(std::string& dataPath, std::string& outPath){
 	ofstream outFile;
 	openFileWrite(outPath, outFile);									// open the above file
 
-	// for(int metric = 0; metric < 3; metric++){
-	// 	runTests(metric, outFile);
-	// 	evaluate(metric, outFile, Messages[metric]);
-	// }
+	for(int metric = 0; metric < 3; metric++){
+		runTests(metric, outFile);
+		evaluate(metric, outFile, Messages[metric]);
+	}
 
-	// int index = COS_INDEX;
+	// int index = HAM_INDEX;
 	// runTests(index, outFile);
 	// evaluate(index, outFile, Messages[index]);
 
@@ -332,7 +334,6 @@ void RecommendManager::validate(std::ofstream& outFile){
 
 	s << F << "-fold cross validation taking place now..."; coutR << s;
 
-
 	List<int> positions;
 	for(int i = 0; i < NumUsers; i++){				// create a list that contains
 		positions.insertRandom( new int(i), true);	// all users in random order
@@ -381,7 +382,9 @@ void RecommendManager::validate(std::ofstream& outFile){
 
 		double fMAE[3] = {0.0, 0.0, 0.0};
 		for(int metric = 0; metric < 3; metric++){			// for every metric
+			ValidationNeigbors = true;
 			runTests(metric, outFile);						// perform validation tests
+			ValidationNeigbors = false;
 
 			for(Index user(Partitions[f]); user < Partitions[f]->size(); user++){	// for every test user
 				// compute his share of MAE (of this partition)

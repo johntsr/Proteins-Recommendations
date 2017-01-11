@@ -106,26 +106,20 @@ PointType HammingPoint::type(void){
 ******************************************************************/
 
 Hamming_h::Hamming_h(int length){						// length of the input bitstring
-
+	Bitset* temp = new Bitset(length);
 	for(int i = 0; i < MASKS; i++){
-		int position = length * Math::dRand();				// randomply pick a bit to "peek"
-		Bitset* temp = new Bitset(length);
+		int position = length * Math::dRand();			// randomply pick a bit to "peek"
 		temp->set(position);
-		Mask[i] = new HammingPoint( "mask", temp );			// create a point out of this mask
 	}
+	Mask = new HammingPoint( "mask", temp );			// create a point out of this mask
 }
 
 uint64_t Hamming_h::hash(Point* p ){					// map a multi-dimensional hamming point into an integer
+	Quantity* temp = p->multiply(Mask);
+	bool nonZero = temp->getBits()->count() > 0;		// bitwise AND between point and mask => bit exrtaction
+	delete temp;
 
-	bool nonZero = false;
-	for(int i = 0; i < MASKS; i++){
-		Quantity* temp = p->multiply(Mask[i]);
-		nonZero = nonZero || temp->getBits()->count() > 0;		// bitwise AND between point and mask => bit exrtaction
-		delete temp;
-	}
-
-
-	if (  nonZero ){									// non negative result means the bit was 1
+	if ( nonZero ){										// non negative result means the bit was 1
 		return 1;
 	}
 	else{												// if the result in 0, then the bit was 0
@@ -134,7 +128,5 @@ uint64_t Hamming_h::hash(Point* p ){					// map a multi-dimensional hamming poin
 }
 
 Hamming_h::~Hamming_h(){
-	for(int i = 0; i < MASKS; i++){
-		delete Mask[i];
-	}
+	delete Mask;
 }

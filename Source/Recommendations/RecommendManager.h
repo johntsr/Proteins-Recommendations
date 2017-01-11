@@ -30,6 +30,7 @@ class RecommendManager{
 		std::string Messages[3];		// Evaluation message  (1 per metric)
 
 		bool Validate;					// whether to perform F-fold cross validation
+		bool ValidationNeigbors;		// whether to estimate only with data set neighbors
 
 		void getPath		(std::string& path, std::string message);// promts "message" to the user, then takes "path" from stdin
 		void openFileWrite	(std::string& path, std::ofstream& file);// open a file in order to write to it
