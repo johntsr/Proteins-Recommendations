@@ -109,7 +109,9 @@ runMedium:
 	./$(OUT) -d ../../DataSets/yahoo_music_big.dat -o results_big.dat
 
 debug:
-	gdb --args ./$(OUT) -d ../../DataSets/yahoo_music_xs.dat -o results_small.dat
+	# gdb --args ./$(OUT) -d ../../DataSets/yahoo_music_xs.dat -o results_small.dat
+	gdb --args ./$(OUT) -d ../../DataSets/yahoo_music_small.dat -o results_small.dat
+	# gdb --args ./$(OUT) -d ../../DataSets/yahoo_music_big.dat -o results_big.dat
 
 valgrind:
 	valgrind --leak-check=full --show-leak-kinds=all ./$(OUT) -d ../../DataSets/yahoo_music_xs.dat -o results_small.dat > log.txt 2>&1

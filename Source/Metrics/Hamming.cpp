@@ -105,6 +105,8 @@ PointType HammingPoint::type(void){
 ***************** Hamming_h class methods ************************
 ******************************************************************/
 
+#define MASKS 60
+
 Hamming_h::Hamming_h(int length){						// length of the input bitstring
 	Bitset* temp = new Bitset(length);
 	for(int i = 0; i < MASKS; i++){

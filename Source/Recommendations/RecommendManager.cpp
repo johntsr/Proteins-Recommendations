@@ -13,6 +13,8 @@
 #define EUCL_INDEX 1
 #define HAM_INDEX 2
 
+#define RUN_INDEX EUCL_INDEX
+
 using namespace std;
 
 PrintReset coutR;
@@ -199,7 +201,6 @@ void RecommendManager::estimateRating(int metric, int user, List<Point, Point*>*
 			continue;
 		}
 
-
 		int count = 0;
 		double sumRatings = 0.0, sumWeights = 0.0;
 		for (index = 0 ; index < neighborNum; index++ ) {
@@ -207,7 +208,7 @@ void RecommendManager::estimateRating(int metric, int user, List<Point, Point*>*
 			// skip the neighbor if he is me (of course!)
 			// or if he hasn't rated the item I am interested in
 			if( neighborIndexes[index] == user || !RealRatings[neighborIndexes[index]][item]
-				|| ( ValidationNeigbors && !DataPoint[neighborIndexes[index]] ) ){	// TODO
+				|| ( ValidationNeigbors && !DataPoint[neighborIndexes[index]] ) ){
 				continue;
 			}
 
@@ -243,7 +244,7 @@ void RecommendManager::run(std::string& dataPath, std::string& outPath){
 		evaluate(metric, outFile, Messages[metric]);
 	}
 
-	// int index = HAM_INDEX;
+	// int index = RUN_INDEX;
 	// runTests(index, outFile);
 	// evaluate(index, outFile, Messages[index]);
 
@@ -295,7 +296,7 @@ void RecommendManager::fillTable(std::string dataPath){
 void RecommendManager::evaluate(int metric, std::ofstream& outFile, string Message){
 	stringstream s;
 
-	s << "Evaluating the top 5 items for every user..."; coutR << s;
+	s << "Evaluating the top 5 items for every user... (metric = " << metricName(metric) << ")"; coutR << s;
 
 	// prints the top 5 predicted items
 	int* itemIndexes = new int[NumItems];
@@ -331,8 +332,7 @@ void RecommendManager::evaluate(int metric, std::ofstream& outFile, string Messa
 void RecommendManager::validate(std::ofstream& outFile){
 	stringstream s;
 	int F = 10;										// 10- fold cross validation
-
-	s << F << "-fold cross validation taking place now..."; coutR << s;
+	cout << F << "-fold cross validation taking place now..." << endl;
 
 	List<int> positions;
 	for(int i = 0; i < NumUsers; i++){				// create a list that contains
@@ -386,18 +386,21 @@ void RecommendManager::validate(std::ofstream& outFile){
 			runTests(metric, outFile);						// perform validation tests
 			ValidationNeigbors = false;
 
+			int countPairs = 0;
 			for(Index user(Partitions[f]); user < Partitions[f]->size(); user++){	// for every test user
 				// compute his share of MAE (of this partition)
 				for(int item = 0; item < NumItems; item++){
 					if( !RealRatings[*user][item] ){	// NOTE: NOT! skip the unpredicted!
 						fMAE[metric] += abs( ResultRatingsCopy[metric][user.index()][item] - ResultRatings[metric][*user][item] );
+						countPairs++;
 					}
 					ResultRatings[metric][*user][item] = ResultRatingsCopy[metric][user.index()][item];
 				}
 				delete[] ResultRatingsCopy[metric][user.index()];
 			}
 			delete[] ResultRatingsCopy[metric];
-			fMAE[metric] /= Partitions[f]->size();
+			fMAE[metric] /= countPairs;
+			// fMAE[metric] /= Partitions[f]->size();
 			MAE[metric] += fMAE[metric];
 		}
 
@@ -672,11 +675,13 @@ void ClusterRecommendManager::fillTable(std::string dataPath){
 	for(int metric = 0; metric < 3; metric++){
 		findAlgorithm(metric);
 	}
+
+	// findAlgorithm(RUN_INDEX);
 }
 
 void ClusterRecommendManager::findAlgorithm(int metric){
 	stringstream s;
-	// TODO
+
 	Algorithm[metric] = NULL;										// initially, no algorithm was picked
 	d[metric] = new TriangularMatrixLazy(NumUsers, PointTable[metric]);	// initialise the distance matrix
 
@@ -684,17 +689,19 @@ void ClusterRecommendManager::findAlgorithm(int metric){
 	double bestScore = -2.0;										// initialise "bestScore" to be small enough (Silhouette)
 	int MaxK = log2(NumUsers) * 2;									// max # of clusters I will check
 
-	s << "Ready to select optimal K in [2, " << MaxK - 1 << "] through Silhouette... (metric = " << metricName(metric) << ")"; coutR << s;
+	s << "Ready to select optimal K in [10, " << MaxK - 1 << "] through Silhouette... (metric = " << metricName(metric) << ")"; coutR << s;
 
-	for( int clusters = 2; clusters < MaxK; clusters++){			// for every possible # of clusters
+	for( int clusters = 10; clusters < MaxK; clusters++){			// for every possible # of clusters
 
 		s << "Clustering progress: " << clusters * 100.0 / MaxK << "%"; coutCR << s;
 
-		// pick an algorithm (Park-Jun, PAM-Swap, Lloyd's)
-		// TODO
-		ClusterAlgorithm* tempClustering = new ClusterAlgorithm(PointTable[metric], d[metric], NumUsers, clusters, 0, -1, -1, -1, -1, true);
+		// pick an algorithm (Random initialisation, PAM-Swap, Lloyd's)
+		// ClusterAlgorithm* tempClustering = new ClusterAlgorithm(PointTable[metric], d[metric], NumUsers, clusters, 4, -1, -1, -1, -1, true);
+		ClusterAlgorithm* tempClustering = new ClusterAlgorithm(PointTable[metric], d[metric], NumUsers, clusters, 0, -1, -1, -1, -1, false);
+
 		tempClustering->run();										// run the algorithm
 		double tempScore = tempClustering->evaluate(dummyFile, false, true);	// get his score
+
 		if( tempScore > bestScore ){								// if its good enough
 			bestScore = tempScore;									// keep the score
 			K_clusters[metric] = clusters;							// keep the clusters
@@ -707,20 +714,20 @@ void ClusterRecommendManager::findAlgorithm(int metric){
 			delete tempClustering;
 		}
 	}
-
-	// std::cout << "clusters[" << metric << "] = " << K_clusters[metric] << '\n';
-	// for(int i = 0; i < K_clusters[metric]; i++){
-	// 	std::cout << "i = " << i << ", size = " << Algorithm[metric]->getCluster(i)->count() << '\n';
-	// }
-	// std::cout << '\n' << '\n' << '\n';
 }
 
 void ClusterRecommendManager::runTests(int metric, std::ofstream& outFile){
+	stringstream s;
+	int i = 0;
+	s << "Estimate ratings for every user... (metric = " << metricName(metric) << ")"; coutR << s;
+
 	for(int k = 0; k < K_clusters[metric]; k++){
 		List<AssignPair>* cluster = Algorithm[metric]->getCluster(k);
 		List<Point, Point*>* Neighbors = findNeighbours(metric, cluster);
 		for (Node<AssignPair>* node = cluster->start() ; node != NULL; node = node->next() ) {
 			estimateRating(metric, node->data()->assigned(), Neighbors);
+			i++;
+			s << "Estimation completion: " << (i * 100.0 / NumUsers) << "%"; coutCR << s;
 		}
 		delete Neighbors;
 	}

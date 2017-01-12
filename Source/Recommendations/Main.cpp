@@ -91,7 +91,7 @@ void getPath(string& path, string message);
 
 void openFile(string& path, fstream& file);
 
-void parseArguments(int argc, char** argv, string& dataPath, string& outPath, bool& CUTest );
+void parseArguments(int argc, char** argv, string& dataPath, string& outPath, bool& CUTest, bool& validate );
 
 
 int main(int argc, char *argv[]) {
@@ -101,11 +101,12 @@ int main(int argc, char *argv[]) {
 	string dataPath, outPath;
 	fstream dataFile;
 	bool CUTest = false;
+	bool validate = false;
 
-	parseArguments(argc, argv, dataPath, outPath, CUTest );
+	parseArguments(argc, argv, dataPath, outPath, CUTest, validate);
 
-	// RecommendManager* manager =  new NNRecommendManager(true);
-	RecommendManager* manager =  new ClusterRecommendManager(true);
+	// RecommendManager* manager =  new NNRecommendManager(validate);
+	RecommendManager* manager =  new ClusterRecommendManager(validate);
 
 	getPath( dataPath, "Please, enter the path for the data set file" );
 	openFile(dataPath, dataFile);
@@ -122,7 +123,7 @@ int main(int argc, char *argv[]) {
 	return 0;
 }
 
-void parseArguments(int argc, char** argv, string& dataPath, string& outPath, bool& CUTest){
+void parseArguments(int argc, char** argv, string& dataPath, string& outPath, bool& CUTest, bool& validate ){
 
 	dataPath = outPath = "";
 	CUTest = false;
@@ -138,6 +139,9 @@ void parseArguments(int argc, char** argv, string& dataPath, string& outPath, bo
 		}
 		else if( !strcmp( "-cu", argv[i] ) ){
 			CUTest = true;
+		}
+		else if( !strcmp( "-validate", argv[i] ) ){
+			validate = true;
 		}
 	}
 
