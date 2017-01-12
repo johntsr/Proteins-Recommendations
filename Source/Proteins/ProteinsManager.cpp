@@ -103,14 +103,15 @@ void ProteinsManager::runTests(ofstream& outfFile){
 	Algorithm = NULL;				// initially, no algorithm was picked
 	int MaxK = log2(numConform) * 5;
 
-	s << "Ready to select optimal K in [2, " << MaxK - 1 << "] through Silhouette..." << "(method = " << method() << ")"; coutR << s;
+	s << "Ready to select optimal K in [4, " << MaxK - 1 << "] through Silhouette..." << "(method = " << method() << ")"; coutR << s;
 
-	for( int clusters = 2; clusters < MaxK; clusters++){	// for every possible cluster
+	for( int clusters = 4; clusters < MaxK; clusters++){	// for every possible cluster
 
 		s << "Clustering progress: " << clusters * 100.0 / MaxK << "%"; coutCR << s;
 
 		// pick an algorithm
-		ProteinsCluster* tempClustering = new ProteinsCluster(PointTable, d, numConform, clusters, 4, -1, -1, -1, -1, RandCluster);
+		// ProteinsCluster* tempClustering = new ProteinsCluster(PointTable, d, numConform, clusters, 4, -1, -1, -1, -1, RandCluster);
+		ClusterAlgorithm* tempClustering = new ClusterAlgorithm(PointTable, d, numConform, clusters, 4, -1, -1, -1, -1, RandCluster);
 
 		// run the algorithm
 		clock_t start = clock();
@@ -119,6 +120,7 @@ void ProteinsManager::runTests(ofstream& outfFile){
 		bestTime = (end - start)/(double)CLOCKS_PER_SEC;
 
 		double tempScore = tempClustering->evaluate(outfFile, Complete, false);
+		// double tempScore = tempClustering->evaluate(outfFile, true, true);
 
 		if( tempScore > bestScore ){
 			bestScore = tempScore;
@@ -138,6 +140,8 @@ void ProteinsManager::runTests(ofstream& outfFile){
 	evaluate(outfFile);
 
 	s << endl << endl; coutR << s;
+
+	// double tempScore = tempClustering->evaluate(outfFile, true, true);
 
 	// std::cout << "clusters = " << K_clusters << '\n';
 	// for(int i = 0; i < K_clusters; i++){
@@ -160,8 +164,7 @@ void ProteinsManager::fillTable(std::string dataPath){
 		s << "Parsing completion: " << i * 100.0 / numConform << "%"; coutCR << s;
 	}
 
-	d = new TriangularMatrixLazy(numConform, PointTable);	// TODO
-	// d = new TriangularMatrix(numConform, PointTable);
+	d = new TriangularMatrixLazy(numConform, PointTable);
 }
 
 void ProteinsManager::finalise(void){
@@ -190,7 +193,7 @@ ProteinsManager::~ProteinsManager(){
 
 cRMSDManager::cRMSDManager(bool complete)
 : ProteinsManager(complete) {
-	RandCluster = true;			// TODO: faster!
+	RandCluster = true;
 }
 
 Point* cRMSDManager::getNextPoint(ifstream& queryFile){				// depends on the format of the file
@@ -346,8 +349,6 @@ Point* dRMSDManager::getNextPoint(ifstream& queryFile){				// depends on the for
 	// double execTime = (end - start)/(double)CLOCKS_PER_SEC;
 	// std::cout << "time = " << execTime << '\n';
 }
-
-
 
 void dRMSDManager::evaluate(std::ofstream& outfFile){
 	double Silhouette = Algorithm->evaluate(outfFile, Complete, false);

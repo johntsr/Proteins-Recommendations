@@ -17,7 +17,7 @@ class ProteinsManager{
 		TriangularMatrix* d;				// the table of precomputed distances
 		int 	numConform;					// the number of proteins
 		int 	N;							// the number of aminoacids per protein
-		ProteinsCluster* Algorithm;			// the algorithms to run
+		ClusterAlgorithm* Algorithm;		// the algorithms to run
 		double BestTime;					// clustering time of best algorithm
 		int K_clusters;						// the number of clusters
 		bool Complete;						// whether to print all the clusters or just the centers

@@ -13,6 +13,10 @@ typedef int (*rGenerator)(int N);
 // abstract class used to communicate with the user
 class RecommendManager{
 	protected:
+		static int count;
+		static double BestMAE;
+		static std::string BestMethod;
+
 		Point** PointTable[3];			// the table of points to be clustered (1 per metric)
 		int 	NumUsers;				// the number of users
 		int 	NumItems;				// the number of items
@@ -53,6 +57,8 @@ class RecommendManager{
 
 		void run(std::string& dataPath, std::string& outPath);		// initiate the procedure of "train & test"
 		void runCUTests(void);
+
+		static void printBestMethod(void);
 
 		virtual ~RecommendManager();
 };

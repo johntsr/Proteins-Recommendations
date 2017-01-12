@@ -103,22 +103,44 @@ int main(int argc, char *argv[]) {
 	bool CUTest = false;
 	bool validate = false;
 
+	clock_t start, end;
+	double execTime;
+
+
 	parseArguments(argc, argv, dataPath, outPath, CUTest, validate);
-
-	// RecommendManager* manager =  new NNRecommendManager(validate);
-	RecommendManager* manager =  new ClusterRecommendManager(validate);
-
 	getPath( dataPath, "Please, enter the path for the data set file" );
-	openFile(dataPath, dataFile);
+	getPath( outPath,  "Please, enter the path for the output file" );	// promt the user for output file
 
-	if(manager != NULL){
-		ofstream file( outPath.c_str() );
-		manager->run(dataPath, outPath);
-		if( CUTest ){
-			manager->runCUTests();
-		}
-		delete manager;
+	remove( outPath.c_str() );
+
+	std::cout << "LSH recommendations follow..." << std::endl;
+	RecommendManager* managerNN =  new NNRecommendManager(validate);
+	start = clock();
+	managerNN->run(dataPath, outPath);
+	end = clock();
+	execTime = (end - start)/(double)CLOCKS_PER_SEC;
+	std::cout << "LSH running time: " << execTime << " secs." << std::endl;
+
+	if( CUTest ){
+		managerNN->runCUTests();
 	}
+	delete managerNN;
+
+	std::cout << std::endl << std::endl << "Clustering recommendations follow..." << std::endl;
+
+	RecommendManager* managerCluster =  new ClusterRecommendManager(validate);
+	start = clock();
+	managerCluster->run(dataPath, outPath);
+	end = clock();
+	execTime = (end - start)/(double)CLOCKS_PER_SEC;
+	std::cout << "Clustering running time: " << execTime << " secs." << std::endl;
+
+	if( CUTest ){
+		managerCluster->runCUTests();
+	}
+	delete managerCluster;
+
+	RecommendManager::printBestMethod();
 
 	return 0;
 }

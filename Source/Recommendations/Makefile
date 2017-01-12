@@ -102,8 +102,14 @@ mkdir:
 runXS:
 	time ./$(OUT) -d ../../DataSets/yahoo_music_xs.dat -o results_xs.dat
 
+runXSValidate:
+	time ./$(OUT) -d ../../DataSets/yahoo_music_xs.dat -o results_xs.dat -validate
+
 runSmall:
-	./$(OUT) -d ../../DataSets/yahoo_music_small.dat -o results_small.dat
+	time ./$(OUT) -d ../../DataSets/yahoo_music_small.dat -o results_small.dat
+
+runSmallValidate:
+	time ./$(OUT) -d ../../DataSets/yahoo_music_small.dat -o results_small.dat -validate
 
 runMedium:
 	./$(OUT) -d ../../DataSets/yahoo_music_big.dat -o results_big.dat

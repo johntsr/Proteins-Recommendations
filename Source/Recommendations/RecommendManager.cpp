@@ -13,8 +13,6 @@
 #define EUCL_INDEX 1
 #define HAM_INDEX 2
 
-#define RUN_INDEX EUCL_INDEX
-
 using namespace std;
 
 PrintReset coutR;
@@ -39,6 +37,11 @@ string metricName(int metric){
 /*****************************************************************
 ***************** RecommendManager class methods *************************
 ******************************************************************/
+
+
+int RecommendManager::count = -1;
+double RecommendManager::BestMAE = DBL_MAX;
+string RecommendManager::BestMethod = "";
 
 void RecommendManager::getPath(string& path, string message){
 	if( path != "" ){											// if the path is already set
@@ -67,11 +70,11 @@ RecommendManager::RecommendManager(bool validate) {
 	NumItems = 0;
 	Validate = validate;
 	ValidationNeigbors = false;
+
+	count = -1;
 }
 
 Point** RecommendManager::getNextPoint(ifstream& queryFile){
-	static int count = -1;										// the id of each user
-
 	stringstream name;
 	count++;
 	name << count + 1;
@@ -235,7 +238,6 @@ void RecommendManager::estimateRating(int metric, int user, List<Point, Point*>*
 
 void RecommendManager::run(std::string& dataPath, std::string& outPath){
 	fillTable(dataPath);												// create the LSHT (as needed for every Point type)
-	getPath( outPath,  "Please, enter the path for the output file" );	// promt the user for output file
 	ofstream outFile;
 	openFileWrite(outPath, outFile);									// open the above file
 
@@ -243,11 +245,6 @@ void RecommendManager::run(std::string& dataPath, std::string& outPath){
 		runTests(metric, outFile);
 		evaluate(metric, outFile, Messages[metric]);
 	}
-
-	// int index = RUN_INDEX;
-	// runTests(index, outFile);
-	// evaluate(index, outFile, Messages[index]);
-
 
 	if( Validate ){
 		validate(outFile);
@@ -300,7 +297,11 @@ void RecommendManager::evaluate(int metric, std::ofstream& outFile, string Messa
 
 	// prints the top 5 predicted items
 	int* itemIndexes = new int[NumItems];
-	outFile << Message << endl;
+
+	if(!ValidationNeigbors){
+		outFile << Message << endl;
+	}
+
 	for(int i = 0; i < NumUsers; i++){
 
 
@@ -310,22 +311,32 @@ void RecommendManager::evaluate(int metric, std::ofstream& outFile, string Messa
 		}
 
 		Math::sort(ResultRatings[metric][i], itemIndexes, NumItems);
-		outFile << i << " ";
+		if(!ValidationNeigbors){
+			outFile << i << " ";
+		}
 		for(int j = 0, count = 0; j < NumItems && count < 5; j++ ){
 			// print only predicted items
 			if( !RealRatings[i][ itemIndexes[j] ] ){
 				count++;
-				outFile << itemIndexes[j] << " ";
+				if(!ValidationNeigbors){
+					outFile << itemIndexes[j] << " ";
+				}
 			}
 		}
-		outFile << endl;
+
+		if(!ValidationNeigbors){
+			outFile << endl;
+		}
 
 		s << "Evaluation completion: " << i * 100.0 / NumUsers << "%"; coutCR << s;
 	}
 
-	outFile << endl;
-	outFile << endl;
-	outFile << endl;
+	if(!ValidationNeigbors){
+		outFile << endl;
+		outFile << endl;
+		outFile << endl;
+	}
+
 	delete[] itemIndexes;
 }
 
@@ -423,7 +434,14 @@ void RecommendManager::validate(std::ofstream& outFile){
 	for(int metric = 0; metric < 3; metric++){
 		MAE[metric] /= F;
 		outFile << Messages[metric] << " MAE: " << MAE[metric] << endl;
+		if( MAE[metric] < BestMAE ){
+			BestMAE = MAE[metric];
+			BestMethod = Messages[metric];
+		}
 	}
+	outFile << endl;
+	outFile << endl;
+	outFile << endl;
 
 
 	for(int f = 0; f < F; f++){
@@ -466,6 +484,13 @@ void RecommendManager::finalise(void){
 
 RecommendManager::~RecommendManager(){
 	finalise();
+}
+
+void RecommendManager::printBestMethod(void){
+	if( BestMAE != DBL_MAX ){		
+		std::cout << "Best method = " << BestMethod << std::endl;
+		std::cout << "MAE = " << BestMAE << std::endl;
+	}
 }
 
 /*****************************************************************
