@@ -12,9 +12,9 @@ From C++ perspective:
   3. Compile the C++ code with the apropriate flags and name it as expected (libXXX.so).
   
   Files of interest:
-    Example.java
-    Example.cpp
-    Example.h
-    Makefile
+    1. Example.java (the Java code)
+    2. Example.h (the auto-generated header file)
+    3. Main.cpp (the implementation of the native methods)
+    4. Makefile (the apropriate g++ flags)
   
   See the example!
