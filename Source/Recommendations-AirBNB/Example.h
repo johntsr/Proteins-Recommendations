@@ -25,6 +25,14 @@ JNIEXPORT void JNICALL Java_Example_addLSHPoint
 
 /*
  * Class:     Example
+ * Method:    updateLSHPoint
+ * Signature: (I[I[I)V
+ */
+JNIEXPORT void JNICALL Java_Example_updateLSHPoint
+  (JNIEnv *, jobject, jint, jintArray, jintArray);
+
+/*
+ * Class:     Example
  * Method:    getRecommendedItems
  * Signature: (II)[I
  */

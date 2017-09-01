@@ -41,6 +41,15 @@ class LocalHashTable{
 
 		}
 
+		void remove(T* point){							// insert a point in the structure
+			PointList.removeFirst(point);		// insert it in the list, mark it to be deleted when the program terminates
+
+			for( int i = 0; i < L; i++){
+				HashTables[i]->remove( point );	// also insert it in the Hash Tables, mark it no to be deleted!
+			}
+
+		}
+
 		void inRange( U point, double R, List<T,U>& ResultPoints ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in

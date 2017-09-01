@@ -256,7 +256,8 @@ class List{
 		}
 
 		T* removeFirst(U Data, Node<T>* _start = NULL, Node<T>* _end = NULL){
-			return remove( findFirst(Data, _start, _end) );
+			Node<T>* temp = findFirst(Data, _start, _end);
+			return remove(temp);
 		}
 
 		T* removeLast(U Data, Node<T>* _start = NULL, Node<T>* _end = NULL){

@@ -37,7 +37,7 @@ OBJS 		= $(DIR_BUILD)Main.o $(DIR_BUILD)Hamming.o $(DIR_BUILD)Euclidean.o $(DIR_
 all: $(OUT)
 
 $(OUT): $(OBJS) $(SOURCE) $(HEADER)
-	$(CC) -g $(OBJS) -o $(OUT) -lcunit  -lgsl -lgslcblas -fPIC -shared 
+	$(CC) -g $(OBJS) -o $(OUT) -lcunit  -lgsl -lgslcblas -fPIC -shared
 
 # create/compile the individual files >>separately<<
 

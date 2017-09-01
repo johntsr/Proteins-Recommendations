@@ -42,16 +42,18 @@ class RecommendManager{
 		int P;
 
 
-		void finalise		(void);
-		void 	estimateRating	(int user);
-		double  getRadius		(void);
+		void 					finalise		(void);
+		void 					estimateRating	(int user);
+		double  				getRadius		(void);
 		List<Point, Point*>* 	findNeighbours	(int i);
+		void 					normaliseRatings(int index, List<Pair>* ratingList);
 
 	public:
 		RecommendManager();
 
 		void 		init			(int numItems);
 		void 		addPoint		(List<Pair>* ratingList);
+		void 		updatePoint		(int index, List<Pair>* ratingList);
 		std::vector<int> 	evaluate	(int user, int top);
 
 		void print(void){

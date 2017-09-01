@@ -64,19 +64,42 @@ void RecommendManager::addPoint(List<Pair>* ratingList){
 	stringstream name;
 	name << count;
 
+	ResultRatings.push_back(vector<double>());
+	RealRatings.push_back(vector<bool>());
+	MeanRatings.push_back(0.0);
+	normaliseRatings(count, ratingList);
+
+	PointTable.push_back(new CosinePointSparse( name.str(), ratingList));
+	PointMap[PointTable[count]] = count;
+	LSH->insert( PointTable[count] );					// store all the points
+}
+
+void RecommendManager::updatePoint(int index, List<Pair>* ratingList){
+	ResultRatings[index] = vector<double>();
+	RealRatings[index] = vector<bool>();
+	normaliseRatings(index, ratingList);
+
+	Point* temp = PointTable[index];
+	PointMap.erase(temp);
+
+	PointTable[index] = new CosinePointSparse( temp->name(), ratingList);
+	PointMap[PointTable[index]] = index;
+	LSH->remove( temp );
+	LSH->insert( PointTable[index] );
+}
+
+void RecommendManager::normaliseRatings(int index, List<Pair>* ratingList){
 	// calculate mean value of ratings
 	double mean = 0.0;
 	for (Node<Pair>* node = ratingList->start() ; node != NULL; node = node->next() ) {
 		mean += node->data()->Rating;
 	}
 	mean /= ratingList->count();
-	MeanRatings.push_back(mean);									// store the mean value of the user
+	MeanRatings[index] = mean;
 
-	ResultRatings.push_back(vector<double>());
-	RealRatings.push_back(vector<bool>());
 	for(int i = 0; i < NumItems; i++){							// initialise every item's rating
-		ResultRatings[count].push_back(DBL_MAX);
-		RealRatings[count].push_back(false);
+		ResultRatings[index].push_back(DBL_MAX);
+		RealRatings[index].push_back(false);
 	}
 
 	// for the actual ratings
@@ -86,12 +109,6 @@ void RecommendManager::addPoint(List<Pair>* ratingList){
 		ResultRatings[count][node->data()->Item] = node->data()->Rating - mean;
 		RealRatings[count][node->data()->Item] = true;
 	}
-
-	int i = count;
-	PointTable.push_back(new CosinePointSparse( name.str(), ratingList));
-	// PointMap->insert( new PointIndex(i, PointTable[i]), true );
-	PointMap[PointTable[i]] = i;
-	LSH->insert( PointTable[i] );					// store all the points
 }
 
 void RecommendManager::estimateRating(int user){
@@ -228,8 +245,6 @@ double RecommendManager::getRadius(){
 }
 
 List<Point, Point*>* RecommendManager::findNeighbours(int user){
-
-	return new List<Point, Point*>();
 
 	Point* point = PointTable[user];					// get the point of global table
 

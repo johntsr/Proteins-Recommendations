@@ -24,6 +24,10 @@ class PointBucketStructure{								// class representing the bucket of a hashtab
 			BucketList->insertAtStart( value , false);	// insert it at the start of the list
 		}
 
+		void remove(T* value){							// add a point to the bucket
+			BucketList->removeFirst(value);				// insert it at the start of the list
+		}
+
 		void inRange( U point, double R, List<T,U>& ResultPoints ){
 			// "point"  		: the Point whose neighbours I am searching
 			// "R"				: the range I am interested in
@@ -136,6 +140,12 @@ class PointHashTable{									// class representing a hash table of points
 			uint64_t position = H_function->hash( value );		// hash the point, keep the index that is returned
 			BucketTable[position]->add( value );				// store the point in the appropriate bucket
 			PointCount++;										// another point is added
+		}
+
+		virtual void remove(T* value){							// insert a Point in the Hash Table
+			uint64_t position = H_function->hash( value );		// hash the point, keep the index that is returned
+			BucketTable[position]->remove( value );				// store the point in the appropriate bucket
+			PointCount--;										// another point is added
 		}
 
 		virtual void print(void){

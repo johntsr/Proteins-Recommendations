@@ -15,16 +15,11 @@ double Point::C = 1.0;
 
 RecommendManager* manager = new RecommendManager();
 
-int x = 0;
-
 JNIEXPORT void JNICALL Java_Example_initLSH(JNIEnv *env, jobject obj, jint numItems){
 	manager->init(numItems);
-	x += 1;
 }
 
 JNIEXPORT void JNICALL Java_Example_addLSHPoint(JNIEnv *env, jobject obj, jintArray items, jintArray ratings){
-
-	x *= 3;
 	List<Pair>* userRatings = new List<Pair>();
 	jsize len = env->GetArrayLength(items);
     jint *itemsBody = env->GetIntArrayElements(items, 0);
@@ -32,11 +27,23 @@ JNIEXPORT void JNICALL Java_Example_addLSHPoint(JNIEnv *env, jobject obj, jintAr
 
 	for (int i = 0; i < len; i++) {
 		userRatings->insertAtEnd(new Pair(itemsBody[i], ratingsBody[i]), true);
-		// std::cout << "itemsBody[" << i << "] = " << itemsBody[i] << '\n';
-		// std::cout << "ratingsBody[" << i << "] = " << ratingsBody[i] << '\n';
-		// std::cout << '\n';
 	}
 	manager->addPoint(userRatings);
+
+	env->ReleaseIntArrayElements(items, itemsBody, 0);
+	env->ReleaseIntArrayElements(ratings, ratingsBody, 0);
+}
+
+JNIEXPORT void JNICALL Java_Example_updateLSHPoint(JNIEnv *env, jobject obj, jint index, jintArray items, jintArray ratings){
+	List<Pair>* userRatings = new List<Pair>();
+	jsize len = env->GetArrayLength(items);
+    jint *itemsBody = env->GetIntArrayElements(items, 0);
+	jint *ratingsBody = env->GetIntArrayElements(ratings, 0);
+
+	for (int i = 0; i < len; i++) {
+		userRatings->insertAtEnd(new Pair(itemsBody[i], ratingsBody[i]), true);
+	}
+	manager->updatePoint(index, userRatings);
 
 	env->ReleaseIntArrayElements(items, itemsBody, 0);
 	env->ReleaseIntArrayElements(ratings, ratingsBody, 0);
@@ -69,6 +76,7 @@ int main(int argc, char *argv[]) {
 	// 		ratings->insertAtEnd(new Pair(j, i % 3), true);
 	// 	}
 	// 	manager->addPoint(ratings);
+	// 	manager->updatePoint(i, ratings);
 	// }
 	//
 	// int user = 0;
