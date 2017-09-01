@@ -11,4 +11,10 @@ From C++ perspective:
   2. Implement the methods in the above header file in C++.
   3. Compile the C++ code with the apropriate flags and name it as expected (libXXX.so).
   
+  Files of interest:
+    Example.java
+    Example.cpp
+    Example.h
+    Makefile
+  
   See the example!
