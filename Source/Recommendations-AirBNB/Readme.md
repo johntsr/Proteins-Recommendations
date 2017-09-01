@@ -11,10 +11,10 @@ From C++ perspective:
   2. Implement the methods in the above header file in C++.
   3. Compile the C++ code with the apropriate flags and name it as expected (libXXX.so).
   
-  Files of interest:
-    1. Example.java (the Java code)
-    2. Example.h (the auto-generated header file)
-    3. Main.cpp (the implementation of the native methods)
-    4. Makefile (the apropriate g++ flags)
+Files of interest:
+  1. Example.java (the Java code)
+  2. Example.h (the auto-generated header file)
+  3. Main.cpp (the implementation of the native methods)
+  4. Makefile (the apropriate g++ flags)
   
   See the example!
